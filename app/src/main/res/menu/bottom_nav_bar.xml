@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_home"
+        android:title="Trang chủ"
+        android:icon="@drawable/baseline_home_24"/>
+
+    <item
+        android:id="@+id/nav_search"
+        android:title="Tìm kiếm"
+        android:icon="@drawable/baseline_search_24"/>
+
+    <item
+        android:id="@+id/nav_library"
+        android:title="Thư viện"
+        android:icon="@drawable/baseline_library_music_24"/>
+
+</menu>

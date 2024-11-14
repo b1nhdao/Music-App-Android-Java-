@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="149dp"
+        android:layout_marginTop="63dp"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="86dp"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="256dp"
+        android:text="Hello,"
+        android:textSize="26sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="47dp"
+        android:layout_marginTop="302dp"
+        android:text="Welcome Back"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/edt_username"
+        android:layout_width="291dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="366dp"
+        android:background="@drawable/input_1"
+        android:ems="10"
+        android:hint="Username"
+        android:inputType="text"
+        android:paddingStart="16dp" />
+
+    <EditText
+        android:id="@+id/edt_password"
+        android:layout_width="291dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="432dp"
+        android:background="@drawable/input_1"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:paddingStart="16dp" />
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="279dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="63dp"
+        android:layout_marginTop="514dp"
+        android:background="@drawable/button_1"
+        android:text="Login" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="619dp"
+        android:text="Don't have an account yet ?"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_toSignUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="619dp"
+        android:layout_marginEnd="66dp"
+        android:text="Create account"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+</RelativeLayout>

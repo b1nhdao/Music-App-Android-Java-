@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SearchFragment">
+
+    <EditText
+        android:id="@+id/edt_search"
+        android:layout_width="269dp"
+        android:layout_height="41dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="37dp"
+        android:background="@drawable/input_1"
+        android:ems="10"
+        android:hint="Seaching ..."
+        android:inputType="text"
+        android:paddingStart="10dp"
+        android:textSize="20sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="148dp"
+        android:paddingBottom="100dp" />
+
+    <ToggleButton
+        android:id="@+id/tgbtn_playlist"
+        android:layout_width="70dp"
+        android:layout_height="30dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="217dp"
+        android:layout_marginTop="101dp"
+        android:layout_marginEnd="124dp"
+        android:background="@drawable/toggle_button_1"
+        android:textOff="playlist"
+        android:textOn="Playlist" />
+
+    <ToggleButton
+        android:id="@+id/tgbtn_song"
+        android:layout_width="70dp"
+        android:layout_height="30dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="125dp"
+        android:layout_marginTop="101dp"
+        android:layout_marginEnd="216dp"
+        android:background="@drawable/toggle_button_1"
+        android:text="ToggleButton"
+        android:textOff="Bài hát"
+        android:textOn="Bài hát" />
+
+    <ImageView
+        android:id="@+id/img_search"
+        android:layout_width="46dp"
+        android:layout_height="43dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="333dp"
+        android:layout_marginTop="35dp"
+        android:src="@drawable/baseline_search_24" />
+
+</RelativeLayout>
