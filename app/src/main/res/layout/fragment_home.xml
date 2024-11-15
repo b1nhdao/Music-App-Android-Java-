@@ -3,21 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeFragment">
-
+    tools:context=".Fragment.HomeFragment">
+    <include layout="@layout/action_back" />
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/tv_playlistName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="54dp"
-            android:text="Playlist 1" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView1"
@@ -26,17 +16,17 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="1dp"
-            android:layout_marginTop="82dp" />
+            android:layout_marginTop="95dp" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/tv_playlistName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="34dp"
-            android:layout_marginTop="259dp"
-            android:text="Playlist 2" />
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="67dp"
+            android:text="Playlist 1" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView2"
@@ -45,7 +35,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="1dp"
-            android:layout_marginTop="288dp" />
+            android:layout_marginTop="301dp" />
 
         <TextView
             android:id="@+id/textView5"
@@ -54,7 +44,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="465dp"
+            android:layout_marginTop="478dp"
             android:text="Playlist 3" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -64,7 +54,17 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="0dp"
-            android:layout_marginTop="492dp" />
+            android:layout_marginTop="505dp" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="34dp"
+            android:layout_marginTop="272dp"
+            android:text="Playlist 2" />
 
 
     </RelativeLayout>

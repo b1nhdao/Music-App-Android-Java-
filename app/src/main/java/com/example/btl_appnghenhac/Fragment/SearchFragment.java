@@ -1,4 +1,4 @@
-package com.example.btl_appnghenhac;
+package com.example.btl_appnghenhac.Fragment;
 
 import android.os.Bundle;
 
@@ -17,24 +17,28 @@ import android.widget.ToggleButton;
 import com.example.btl_appnghenhac.Adapter.PlaylistAdapter_HomeFragment;
 import com.example.btl_appnghenhac.Adapter.PlaylistAdapter_SearchFragment;
 import com.example.btl_appnghenhac.Object.Playlist;
+import com.example.btl_appnghenhac.R;
 
 import java.util.ArrayList;
 
-public class LibraryFragment extends Fragment {
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link SearchFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class SearchFragment extends Fragment {
 
-    ToggleButton tgbtn_song, tgbtn_playlist;
+    ToggleButton tgbtn_song, tgbtn_artist, tgbtn_album, tgbtn_playlist;
     EditText edt_search;
     ImageView img_search;
     RecyclerView recyclerView;
 
-    public LibraryFragment() {
+    public SearchFragment() {
         // Required empty public constructor
     }
 
-
-    // TODO: Rename and change types and number of parameters
-    public static LibraryFragment newInstance(String param1, String param2) {
-        LibraryFragment fragment = new LibraryFragment();
+    public static SearchFragment newInstance(String param1, String param2) {
+        SearchFragment fragment = new SearchFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -48,22 +52,26 @@ public class LibraryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
 
-        View view = inflater.inflate(R.layout.fragment_library, container, false);
         img_search = view.findViewById(R.id.img_search);
         edt_search = view.findViewById(R.id.edt_search);
         tgbtn_song = view.findViewById(R.id.tgbtn_song);
+        tgbtn_artist = view.findViewById(R.id.tgbtn_artist);
+        tgbtn_album = view.findViewById(R.id.tgbtn_album);
         tgbtn_playlist = view.findViewById(R.id.tgbtn_playlist);
 
         tgbtn_song.setChecked(true);
 
-        inactiveOtherButtons(tgbtn_song, tgbtn_playlist);
-        inactiveOtherButtons(tgbtn_playlist, tgbtn_song);
+        inactiveOtherButtons(tgbtn_song, tgbtn_artist, tgbtn_album, tgbtn_playlist);
+        inactiveOtherButtons(tgbtn_artist, tgbtn_song, tgbtn_album, tgbtn_playlist);
+        inactiveOtherButtons(tgbtn_album, tgbtn_artist, tgbtn_song, tgbtn_playlist);
+        inactiveOtherButtons(tgbtn_playlist, tgbtn_artist, tgbtn_album, tgbtn_song);
 
         img_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(),edt_search.getText().toString() + " | " +  getValueToggleButton(tgbtn_song, tgbtn_playlist), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),edt_search.getText().toString() + " | " +  getValueToggleButton(tgbtn_song, tgbtn_artist, tgbtn_album, tgbtn_playlist), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -80,38 +88,44 @@ public class LibraryFragment extends Fragment {
 
 
         PlaylistAdapter_SearchFragment adapter = new PlaylistAdapter_SearchFragment(list1);
-        PlaylistAdapter_HomeFragment adapter1 = new PlaylistAdapter_HomeFragment(list1);
+
+        PlaylistAdapter_HomeFragment adapter1 = new PlaylistAdapter_HomeFragment(getContext(),list1);
 
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(adapter1);
 
         edt_search.setText("hello");
-
 
         return view;
     }
 
-    public String getValueToggleButton(ToggleButton toggleButton, ToggleButton toggleButton1){
+
+    public String getValueToggleButton(ToggleButton toggleButton, ToggleButton toggleButton1, ToggleButton toggleButton2, ToggleButton toggleButton3){
         if (toggleButton.isChecked()){
             return toggleButton.getText().toString();
         }
         if (toggleButton1.isChecked()){
             return toggleButton1.getText().toString();
         }
+        if (toggleButton2.isChecked()){
+            return toggleButton2.getText().toString();
+        }
+        if (toggleButton3.isChecked()){
+            return toggleButton3.getText().toString();
+        }
         else
             return "Maybe something wrong, please just choose a category that you want to search again :D";
     }
 
-
-    public void inactiveOtherButtons(ToggleButton toggleButton, ToggleButton toggleButton1){
+    public void inactiveOtherButtons(ToggleButton toggleButton, ToggleButton toggleButton1, ToggleButton toggleButton2, ToggleButton toggleButton3){
         toggleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 toggleButton1.setChecked(false);
+                toggleButton2.setChecked(false);
+                toggleButton3.setChecked(false);
             }
         });
     }
-
-
 }

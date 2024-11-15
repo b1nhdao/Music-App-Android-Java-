@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -45,9 +46,11 @@ public class PlaylistAdapter_SearchFragment extends RecyclerView.Adapter<Playlis
     class viewHolder extends RecyclerView.ViewHolder{
         ImageView imageView;
         TextView textView;
+        RelativeLayout relativeLayout;
 
         public viewHolder(@NonNull View itemView) {
             super(itemView);
+            relativeLayout = itemView.findViewById(R.id.relativeLayout);
             imageView = itemView.findViewById(R.id.img_playlist);
             textView = itemView.findViewById(R.id.tv_playlistName);
         }

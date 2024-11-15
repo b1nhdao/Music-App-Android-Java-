@@ -1,27 +1,35 @@
 package com.example.btl_appnghenhac.Adapter;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.btl_appnghenhac.LoginActivity;
 import com.example.btl_appnghenhac.Object.Playlist;
+import com.example.btl_appnghenhac.PlaylistActivity;
 import com.example.btl_appnghenhac.R;
 
 import java.util.ArrayList;
 
 public class PlaylistAdapter_HomeFragment extends RecyclerView.Adapter<PlaylistAdapter_HomeFragment.ViewHolder> {
 
+    private ArrayList<Playlist> playlists;
+    private Context context;
 
-    ArrayList<Playlist> arrayPlaylists;
-
-    public PlaylistAdapter_HomeFragment(ArrayList<Playlist> arrayPlaylists) {
-        this.arrayPlaylists = arrayPlaylists;
+    public PlaylistAdapter_HomeFragment(Context context, ArrayList<Playlist> playlists) {
+        this.context = context;
+        this.playlists = playlists;
     }
 
     @NonNull
@@ -33,27 +41,44 @@ public class PlaylistAdapter_HomeFragment extends RecyclerView.Adapter<PlaylistA
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Playlist playlist = arrayPlaylists.get(position);
-        holder.img_playlist.setImageResource(playlist.getPlaylistImage());
-        holder.tv_playlistName.setText(playlist.getPlaylistName());
+        Playlist playlist = playlists.get(position);
+        holder.imgPlaylist.setImageResource(playlist.getPlaylistImage());
+        holder.tvPlaylistName.setText(playlist.getPlaylistName());
+        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickPlaylist(playlist);
+            }
+        });
     }
+
+    private void onClickPlaylist(Playlist playlist){
+//        Toast.makeText(context, playlist.getPlaylistID() + " ", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(context, PlaylistActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("playlistName", playlist.getPlaylistName());
+        intent.putExtras(bundle);
+        context.startActivity(intent);
+    }
+
 
     @Override
-    public int getItemCount(){
-        return arrayPlaylists.size();
+    public int getItemCount() {
+        return playlists.size();
     }
 
-
-    class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView img_playlist;
-        TextView tv_playlistName;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView imgPlaylist;
+        TextView tvPlaylistName;
         CardView cardView;
-        public ViewHolder(@NonNull View itemView)
-        {
+        RelativeLayout relativeLayout;
+
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            relativeLayout = itemView.findViewById(R.id.relativeLayout);
             cardView = itemView.findViewById(R.id.cardView);
-            img_playlist = itemView.findViewById(R.id.img_playlist);
-            tv_playlistName = itemView.findViewById(R.id.tv_playlistName);
+            imgPlaylist = itemView.findViewById(R.id.img_playlist);
+            tvPlaylistName = itemView.findViewById(R.id.tv_playlistName);
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.btl_appnghenhac;
+package com.example.btl_appnghenhac.Fragment;
 
 import android.os.Bundle;
 
@@ -9,9 +9,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.btl_appnghenhac.Adapter.PlaylistAdapter_HomeFragment;
 import com.example.btl_appnghenhac.Object.Playlist;
+import com.example.btl_appnghenhac.R;
 
 import java.util.ArrayList;
 
@@ -49,13 +51,12 @@ public class HomeFragment extends Fragment {
         recyclerView2 = view.findViewById(R.id.recyclerView2);
         recyclerView3 = view.findViewById(R.id.recyclerView3);
 
-
         ArrayList<Playlist> list = new ArrayList<>();
         list.add(new Playlist(1, R.drawable.stbest, "playlist name 1"));
         list.add(new Playlist(2, R.drawable.stbest, "playlist name 2"));
         list.add(new Playlist(3, R.drawable.stbest, "playlist name 1"));
         list.add(new Playlist(4, R.drawable.stbest, "playlist name 1"));
-        PlaylistAdapter_HomeFragment adapter = new PlaylistAdapter_HomeFragment(list);
+        PlaylistAdapter_HomeFragment adapter = new PlaylistAdapter_HomeFragment(getContext(),list);
 
         ArrayList<Playlist> list1 = new ArrayList<>();
         list1.add(new Playlist(1, R.drawable.ic_launcher_background, "playlist name 1"));
@@ -64,20 +65,17 @@ public class HomeFragment extends Fragment {
         list1.add(new Playlist(4, R.drawable.ic_launcher_background, "playlist name 1"));
 
 
-        PlaylistAdapter_HomeFragment adapter1 = new PlaylistAdapter_HomeFragment(list1);
-
+        PlaylistAdapter_HomeFragment adapter1 = new PlaylistAdapter_HomeFragment(getActivity(), list1);
 
         // Thiết lập LayoutManager và Adapter cho RecyclerView
-        recyclerView1.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerView1.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         recyclerView1.setAdapter(adapter);
 
-        recyclerView2.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerView2.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         recyclerView2.setAdapter(adapter1);
 
-        recyclerView3.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerView3.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         recyclerView3.setAdapter(adapter);
-
-
 
         return view;
     }
