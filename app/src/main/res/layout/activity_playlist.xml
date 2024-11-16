@@ -7,24 +7,28 @@
     android:layout_height="match_parent"
     tools:context=".PlaylistActivity">
 
+    <include layout="@layout/action_back"></include>
+
     <TextView
         android:id="@+id/tv_playlistName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="164dp"
-        android:layout_marginTop="110dp"
-        android:text="TextView" />
+        android:layout_marginStart="169dp"
+        android:layout_marginTop="79dp"
+        android:text="TextView"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/img_playlistImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="129dp"
-        android:layout_marginTop="148dp"
+        android:layout_marginStart="136dp"
+        android:layout_marginTop="119dp"
         tools:srcCompat="@tools:sample/avatars" />
 
     <Button
@@ -33,15 +37,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="148dp"
-        android:layout_marginTop="297dp"
+        android:layout_marginStart="165dp"
+        android:layout_marginTop="291dp"
         android:text="Button" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginBottom="182dp" />
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="362dp" />
 </RelativeLayout>

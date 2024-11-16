@@ -1,6 +1,8 @@
 package com.example.btl_appnghenhac.Object;
 
-public class Playlist {
+import java.io.Serializable;
+
+public class Playlist implements Serializable {
     int playlistID;
     int playlistImage;
     String playlistName;

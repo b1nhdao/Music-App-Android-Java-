@@ -56,7 +56,7 @@ public class PlaylistAdapter_HomeFragment extends RecyclerView.Adapter<PlaylistA
 //        Toast.makeText(context, playlist.getPlaylistID() + " ", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(context, PlaylistActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putString("playlistName", playlist.getPlaylistName());
+        bundle.putSerializable("playlist", playlist);
         intent.putExtras(bundle);
         context.startActivity(intent);
     }

@@ -93,7 +93,7 @@ public class SearchFragment extends Fragment {
 
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        recyclerView.setAdapter(adapter1);
+        recyclerView.setAdapter(adapter);
 
         edt_search.setText("hello");
 

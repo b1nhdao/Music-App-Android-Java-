@@ -13,6 +13,9 @@
         android:theme="@style/Theme.BTL_AppNgheNhac"
         tools:targetApi="31">
         <activity
+            android:name=".SongPlayingActivity"
+            android:exported="false" />
+        <activity
             android:name=".PlaylistActivity"
             android:exported="false" />
         <activity
