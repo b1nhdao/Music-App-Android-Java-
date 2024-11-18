@@ -44,8 +44,8 @@ public class PlaylistAdapter_HomeFragment extends RecyclerView.Adapter<PlaylistA
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Playlist playlist = playlists.get(position);
         Glide.with(context)
-                .load(playlist.getPlaylistUrl()) // URL hình ảnh
-                .into(holder.imgPlaylist); // ImageView trong item
+                .load(playlist.getPlaylistUrl())
+                .into(holder.imgPlaylist);
 
         holder.tvPlaylistName.setText(playlist.getPlaylistName());
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {

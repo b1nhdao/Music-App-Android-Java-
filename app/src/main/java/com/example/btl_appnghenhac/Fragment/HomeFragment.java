@@ -67,41 +67,17 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         recyclerView1 = view.findViewById(R.id.recyclerView1);
+
+        //gonna use them later, just not now. Cuz im too lazy
         recyclerView2 = view.findViewById(R.id.recyclerView2);
         recyclerView3 = view.findViewById(R.id.recyclerView3);
-
-//        ArrayList<Playlist> list = new ArrayList<>();
-//        list.add(new Playlist(1, R.drawable.stbest, "playlist name 1"));
-//        list.add(new Playlist(2, R.drawable.stbest, "playlist name 2"));
-//        list.add(new Playlist(3, R.drawable.stbest, "playlist name 1"));
-//        list.add(new Playlist(4, R.drawable.stbest, "playlist name 1"));
-//        PlaylistAdapter_HomeFragment adapter = new PlaylistAdapter_HomeFragment(getContext(),list);
-//
-//        ArrayList<Playlist> list1 = new ArrayList<>();
-//        list1.add(new Playlist(1, R.drawable.ic_launcher_background, "playlist name 1"));
-//        list1.add(new Playlist(2, R.drawable.ic_launcher_background, "playlist name 2"));
-//        list1.add(new Playlist(3, R.drawable.ic_launcher_background, "playlist name 1"));
-//        list1.add(new Playlist(4, R.drawable.ic_launcher_background, "playlist name 1"));
-//
-//
-//        PlaylistAdapter_HomeFragment adapter1 = new PlaylistAdapter_HomeFragment(getActivity(), list1);
-//
-//        // Thiết lập LayoutManager và Adapter cho RecyclerView
-//        recyclerView1.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-//        recyclerView1.setAdapter(adapter);
-//
-//        recyclerView2.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-//        recyclerView2.setAdapter(adapter1);
-//
-//        recyclerView3.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-//        recyclerView3.setAdapter(adapter);
 
         recyclerView1.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         playlistArrayList = new ArrayList<>();
         adapter = new PlaylistAdapter_HomeFragment(getActivity(), playlistArrayList);
-        recyclerView1.setAdapter(adapter);
 
-        getDataPlaylistFromFirebase(); // Lấy dữ liệu từ Firestore và cập nhật RecyclerView
+        getDataPlaylistFromFirebase(); // get data from firebase and update recyclerview
+        recyclerView1.setAdapter(adapter);
 
         return view;
     }
@@ -125,24 +101,4 @@ public class HomeFragment extends Fragment {
                     }
                 });
     }
-
-    public void getDataPlaylist(){
-        DocumentReference docRef = db.collection("playlist").document("1");
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
-    }
-
 }

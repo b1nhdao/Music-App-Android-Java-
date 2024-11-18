@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.btl_appnghenhac.Object.Song;
 import com.example.btl_appnghenhac.R;
 import com.example.btl_appnghenhac.SongPlayingActivity;
@@ -38,7 +39,10 @@ public class SongAdapter_PlaylistActivity extends RecyclerView.Adapter<SongAdapt
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Song song = songArrayList.get(position);
-        holder.img_song.setImageResource(song.getSongImage());
+        Glide.with(context)
+                .load(song.getSongImageUrl())
+                .into(holder.img_song);
+
         holder.tv_songArtist.setText(song.getSongArtistName());
         holder.tv_songName.setText(song.getSongName());
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {

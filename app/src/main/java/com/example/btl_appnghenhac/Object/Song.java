@@ -12,6 +12,39 @@ public class Song implements Serializable {
     boolean songFavourite;
     int songCounter;
     int songDuration;
+    String songImageUrl;
+    String songURL;
+
+
+    public Song(){
+
+    }
+
+    public String getSongImageUrl() {
+        return songImageUrl;
+    }
+
+    public void setSongImageUrl(String songImageUrl) {
+        this.songImageUrl = songImageUrl;
+    }
+
+    public String getSongURL() {
+        return songURL;
+    }
+
+    public void setSongURL(String songURL) {
+        this.songURL = songURL;
+    }
+
+    public Song(int songID, String songName, String songArtistName, boolean songFavourite, int songDuration, String songImageUrl, String songURL) {
+        this.songID = songID;
+        this.songName = songName;
+        this.songArtistName = songArtistName;
+        this.songFavourite = songFavourite;
+        this.songDuration = songDuration;
+        this.songImageUrl = songImageUrl;
+        this.songURL = songURL;
+    }
 
     public Song(int songID, int songImage, String songName, String songArtistName, int songAlbumID, int songPlaylistID, boolean songFavourite, int songCounter, int songDuration) {
         this.songID = songID;

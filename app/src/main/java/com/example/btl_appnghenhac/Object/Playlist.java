@@ -35,6 +35,14 @@ public class Playlist implements Serializable {
 
     }
 
+    public ArrayList<Integer> getSong() {
+        return song;
+    }
+
+    public void setSong(ArrayList<Integer> song) {
+        this.song = song;
+    }
+
     public String getPlaylistUrl() {
         return playlistUrl;
     }

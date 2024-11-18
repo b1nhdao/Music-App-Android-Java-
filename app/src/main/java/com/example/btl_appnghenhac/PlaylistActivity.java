@@ -2,11 +2,13 @@ package com.example.btl_appnghenhac;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -14,9 +16,15 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.btl_appnghenhac.Adapter.SongAdapter_PlaylistActivity;
 import com.example.btl_appnghenhac.Object.Playlist;
 import com.example.btl_appnghenhac.Object.Song;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -25,6 +33,10 @@ public class PlaylistActivity extends AppCompatActivity {
     TextView tv_playlistName;
     ImageView img_playlistImage, iv_back;
     RecyclerView recyclerView;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private static final String TAG = "HomeFragment";
+    SongAdapter_PlaylistActivity adapter;
+    ArrayList<Song> songArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,17 +64,60 @@ public class PlaylistActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         Playlist playlist = (Playlist) bundle.get("playlist");
+
         tv_playlistName.setText(playlist.getPlaylistName());
-        img_playlistImage.setImageResource(playlist.getPlaylistImage());
+        Glide.with(this)
+                .load(playlist.getPlaylistUrl())
+                .into(img_playlistImage);
 
-        ArrayList<Song> songArrayList = new ArrayList<Song>();
-        songArrayList.add(new Song(1, R.drawable.stbest, "name song 1", "artist name 1", 200));
-        songArrayList.add(new Song(2, R.drawable.stbest, "name song 2", "artist name 2", 200));
-        songArrayList.add(new Song(3, R.drawable.stbest, "name song 3", "artist name 3", 200));
-        songArrayList.add(new Song(4, R.drawable.stbest, "name song 4", "artist name 4", 200));
-
-        SongAdapter_PlaylistActivity adapter = new SongAdapter_PlaylistActivity(songArrayList, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+        songArrayList = new ArrayList<>();
+        adapter = new SongAdapter_PlaylistActivity(songArrayList, this);
+
+
         recyclerView.setAdapter(adapter);
+
+        getDataPlaylistFromFirebase(playlist.getPlaylistID());
+    }
+    private void getDataPlaylistFromFirebase(int playlistId) {
+        String playlistIdStr = String.valueOf(playlistId);
+        db.collection("playlist").document(playlistIdStr).get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            Playlist playlist = task.getResult().toObject(Playlist.class);
+                            if (playlist != null && playlist.getSong() != null) {
+                                fetchSongsFromIds(playlist.getSong());
+                            }
+                        } else {
+                            Log.w(TAG, "Error getting playlist details.", task.getException());
+                        }
+                    }
+                });
+    }
+
+    // Lấy thông tin bài hát từ danh sách songId
+    private void fetchSongsFromIds(ArrayList<Integer> songIds) {
+        songArrayList.clear();
+        for (int songId : songIds) {
+            String songIdStr = String.valueOf(songId);
+            db.collection("song").document(songIdStr).get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful() && task.getResult() != null) {
+                                Song song = task.getResult().toObject(Song.class);
+                                if (song != null) {
+                                    songArrayList.add(song);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            } else {
+                                Log.w(TAG, "Error getting song details.", task.getException());
+                            }
+                        }
+                    });
+        }
     }
 }
