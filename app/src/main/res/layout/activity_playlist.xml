@@ -11,11 +11,12 @@
 
     <TextView
         android:id="@+id/tv_playlistName"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="169dp"
+        android:layout_marginStart="0dp"
         android:layout_marginTop="79dp"
         android:text="TextView"
         android:textSize="20sp"
@@ -27,8 +28,10 @@
         android:layout_height="150dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="136dp"
-        android:layout_marginTop="119dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="131dp"
+        android:layout_marginTop="127dp"
+        android:layout_marginEnd="130dp"
         tools:srcCompat="@tools:sample/avatars" />
 
     <Button
@@ -37,14 +40,17 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="165dp"
-        android:layout_marginTop="291dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="161dp"
+        android:layout_marginTop="295dp"
+        android:layout_marginEnd="159dp"
         android:text="Button" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="1dp"

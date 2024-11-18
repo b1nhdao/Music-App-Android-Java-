@@ -17,20 +17,6 @@ public class Playlist implements Serializable {
         this.playlistName = playlistName;
     }
 
-    public Playlist(int playlistID, int playlistImage, String playlistName, String playlistUrl) {
-        this.playlistID = playlistID;
-        this.playlistImage = playlistImage;
-        this.playlistName = playlistName;
-        this.playlistUrl = playlistUrl;
-    }
-
-    public Playlist(int id, String name, String image, ArrayList<Integer> songs) {
-        this.playlistID = id;
-        this.playlistName = name;
-        this.playlistUrl = image;
-        this.song = songs;
-    }
-
     public Playlist(){
 
     }
