@@ -1,16 +1,46 @@
 package com.example.btl_appnghenhac.Object;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Playlist implements Serializable {
     int playlistID;
     int playlistImage;
     String playlistName;
+    String playlistUrl;
+    private ArrayList<Integer> song;
+
 
     public Playlist(int playlistID, int playlistImage, String playlistName) {
         this.playlistID = playlistID;
         this.playlistImage = playlistImage;
         this.playlistName = playlistName;
+    }
+
+    public Playlist(int playlistID, int playlistImage, String playlistName, String playlistUrl) {
+        this.playlistID = playlistID;
+        this.playlistImage = playlistImage;
+        this.playlistName = playlistName;
+        this.playlistUrl = playlistUrl;
+    }
+
+    public Playlist(int id, String name, String image, ArrayList<Integer> songs) {
+        this.playlistID = id;
+        this.playlistName = name;
+        this.playlistUrl = image;
+        this.song = songs;
+    }
+
+    public Playlist(){
+
+    }
+
+    public String getPlaylistUrl() {
+        return playlistUrl;
+    }
+
+    public void setPlaylistUrl(String playlistUrl) {
+        this.playlistUrl = playlistUrl;
     }
 
     public int getPlaylistID() {

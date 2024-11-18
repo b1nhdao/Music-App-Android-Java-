@@ -14,11 +14,13 @@ import com.example.btl_appnghenhac.Fragment.HomeFragment;
 import com.example.btl_appnghenhac.Fragment.LibraryFragment;
 import com.example.btl_appnghenhac.Fragment.SearchFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
 
     RecyclerView recyclerview;
 
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        db = FirebaseFirestore.getInstance();
 
         loadFragment(new HomeFragment());
 

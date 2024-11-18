@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.btl_appnghenhac.LoginActivity;
 import com.example.btl_appnghenhac.Object.Playlist;
 import com.example.btl_appnghenhac.PlaylistActivity;
@@ -42,7 +43,10 @@ public class PlaylistAdapter_HomeFragment extends RecyclerView.Adapter<PlaylistA
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Playlist playlist = playlists.get(position);
-        holder.imgPlaylist.setImageResource(playlist.getPlaylistImage());
+        Glide.with(context)
+                .load(playlist.getPlaylistUrl()) // URL hình ảnh
+                .into(holder.imgPlaylist); // ImageView trong item
+
         holder.tvPlaylistName.setText(playlist.getPlaylistName());
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
