@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 
 public class PlaylistActivity extends AppCompatActivity {
 
+    Button btn_playList;
     TextView tv_playlistName;
     ImageView img_playlistImage, iv_back;
     RecyclerView recyclerView;
@@ -54,6 +56,7 @@ public class PlaylistActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         iv_back = findViewById(R.id.iv_back);
         iv_back.setVisibility(View.VISIBLE);
+        btn_playList = findViewById(R.id.btn_playList);
 
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +82,16 @@ public class PlaylistActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         getDataPlaylistFromFirebase(playlist.getPlaylistID());
+
+        btn_playList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent2 = new Intent(PlaylistActivity.this, SongPlayingActivity.class);
+                intent2.putExtra("songList", songArrayList);
+                intent2.putExtra("songObject", songArrayList.get(0)); // 'selectedSong' phải là đối tượng kiểu Song
+                startActivity(intent2);
+            }
+        });
     }
     private void getDataPlaylistFromFirebase(int playlistId) {
         String playlistIdStr = String.valueOf(playlistId);

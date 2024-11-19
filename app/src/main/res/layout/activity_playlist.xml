@@ -35,16 +35,17 @@
         tools:srcCompat="@tools:sample/avatars" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btn_playList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="161dp"
+        android:layout_marginStart="162dp"
         android:layout_marginTop="295dp"
-        android:layout_marginEnd="159dp"
-        android:text="Button" />
+        android:layout_marginEnd="158dp"
+        android:background="@drawable/button_1"
+        android:text="Play" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

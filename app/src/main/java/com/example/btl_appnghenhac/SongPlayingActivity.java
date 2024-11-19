@@ -20,6 +20,9 @@ import androidx.core.view.WindowInsetsCompat;
 import com.bumptech.glide.Glide;
 import com.example.btl_appnghenhac.Object.Song;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class SongPlayingActivity extends AppCompatActivity {
 
     ImageView img_songImage, iv_back;
@@ -28,6 +31,12 @@ public class SongPlayingActivity extends AppCompatActivity {
     SeekBar seekBar;
     MediaPlayer mediaPlayer;
     boolean isStreaming = false;
+    ArrayList<Song> songArrayList;
+    int currentSongIndex =  0;
+    boolean isLooping = false;
+    boolean isShuffling = false;
+    private boolean isSingleSongMode = false; // Mặc định là phát từ danh sách
+    private ArrayList<Song> shuffledList = new ArrayList<>();
 
     private Handler handler = new Handler(); // Dùng để cập nhật SeekBar
     private Runnable updateSeekBar; // Runnable để cập nhật SeekBar
@@ -57,6 +66,8 @@ public class SongPlayingActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         Song song = (Song) bundle.get("songObject");
+        songArrayList = (ArrayList<Song>) getIntent().getSerializableExtra("songList");
+
         Glide.with(this)
                 .load(song.getSongImageUrl())
                 .into(img_songImage);
@@ -64,6 +75,8 @@ public class SongPlayingActivity extends AppCompatActivity {
         tv_songArtist.setText(song.getSongArtistName());
         tv_timeEnd.setText(convertDurationToString(song.getSongDuration()));
         seekBar.setMax(song.getSongDuration());
+
+//        ArrayList<Song> songArrayList = (ArrayList<Song>) bundle.get()
 
         img_play.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +99,56 @@ public class SongPlayingActivity extends AppCompatActivity {
                 }
             }
         });
+
+        if (songArrayList == null) {
+            playSong(song, true); // Chơi bài đầu tiên
+        }
+
+
+        if (songArrayList != null && !songArrayList.isEmpty()) {
+            playSong(songArrayList.get(currentSongIndex), false); // Chơi bài đầu tiên
+        }
+
+        img_loop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isLooping){
+                    isLooping = false;
+                    Toast.makeText(SongPlayingActivity.this, "Tắt lặp", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    isLooping = true;
+                    Toast.makeText(SongPlayingActivity.this, "Lặp", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        img_shuffle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isShuffling){
+                    toggleShuffle();
+                }
+                else{
+                    toggleShuffle();
+                }
+            }
+        });
+
+        img_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playNextSong();
+            }
+        });
+
+        img_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playPreviousSong();
+            }
+        });
+
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -111,6 +174,94 @@ public class SongPlayingActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void playSong(Song song, boolean isSingle) {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+
+        try {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setDataSource(song.getSongURL());
+
+            mediaPlayer.setOnPreparedListener(mp -> {
+                mediaPlayer.start();
+
+                // Cập nhật UI khi bài hát đã chuẩn bị xong
+                Glide.with(this).load(song.getSongImageUrl()).into(img_songImage);
+                tv_songName.setText(song.getSongName());
+                tv_songArtist.setText(song.getSongArtistName());
+                tv_timeEnd.setText(convertDurationToString(song.getSongDuration()));
+                seekBar.setMax(mediaPlayer.getDuration());
+
+                updateSeekBar();
+
+                // Lặp bài hát nếu cần
+                mediaPlayer.setOnCompletionListener(mp1 -> {
+                    if (isLooping) {
+                        playSong(song, isSingleSongMode); // Lặp lại bài hát hiện tại
+                    } else if (!isSingleSongMode) {
+                        playNextSong(); // Phát bài tiếp theo nếu trong danh sách
+                    }
+                });
+            });
+
+
+            mediaPlayer.prepareAsync(); // Sử dụng chuẩn bị bất đồng bộ
+
+
+
+        } catch (Exception e) {
+            Log.e("SongPlayingActivity", "Error playing song", e);
+        }
+    }
+
+    private void toggleShuffle() {
+        isShuffling = !isShuffling;
+
+        if (isShuffling) {
+            // Tạo danh sách trộn từ danh sách gốc
+            shuffledList = new ArrayList<>(songArrayList);
+            Collections.shuffle(shuffledList);
+        } else {
+            shuffledList.clear(); // Xóa danh sách trộn nếu tắt Shuffle
+        }
+
+        Toast.makeText(this, isShuffling ? "Shuffle ON" : "Shuffle OFF", Toast.LENGTH_SHORT).show();
+    }
+
+
+    private void playNextSong() {
+        if (isShuffling) {
+            if (!shuffledList.isEmpty()) {
+                currentSongIndex = (currentSongIndex + 1) % shuffledList.size();
+                playSong(shuffledList.get(currentSongIndex), false);
+            }
+        } else {
+            if (!songArrayList.isEmpty()) {
+                currentSongIndex = (currentSongIndex + 1) % songArrayList.size();
+                playSong(songArrayList.get(currentSongIndex), false);
+            }
+        }
+    }
+
+
+    private void playPreviousSong() {
+        if (isShuffling) {
+            if (!shuffledList.isEmpty()) {
+                currentSongIndex = (currentSongIndex - 1 + shuffledList.size()) % shuffledList.size();
+                playSong(shuffledList.get(currentSongIndex), false);
+            }
+        } else {
+            if (!songArrayList.isEmpty()) {
+                currentSongIndex = (currentSongIndex - 1 + songArrayList.size()) % songArrayList.size();
+                playSong(songArrayList.get(currentSongIndex), false);
+            }
+        }
     }
 
     public void startAudioStream(String url){
@@ -141,7 +292,7 @@ public class SongPlayingActivity extends AppCompatActivity {
                     seekBar.setProgress(mediaPlayer.getCurrentPosition());
                     tv_timeCurrent.setText(convertDurationToString(mediaPlayer.getCurrentPosition() / 1000));
                 }
-                handler.postDelayed(this, 1000); // Cập nhật mỗi giây
+                handler.postDelayed(this, 1000);
             }
         };
         handler.post(updateSeekBar);
