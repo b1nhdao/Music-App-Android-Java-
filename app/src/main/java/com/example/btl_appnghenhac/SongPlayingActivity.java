@@ -30,7 +30,6 @@ public class SongPlayingActivity extends AppCompatActivity {
     ImageView img_shuffle, img_back, img_play, img_skip, img_loop;
     SeekBar seekBar;
     MediaPlayer mediaPlayer;
-    boolean isStreaming = false;
     ArrayList<Song> songArrayList;
     int currentSongIndex =  0;
     boolean isLooping = false;
@@ -65,9 +64,16 @@ public class SongPlayingActivity extends AppCompatActivity {
         });
 
         Bundle bundle = getIntent().getExtras();
-        Song song = (Song) bundle.get("songObject");
-        songArrayList = (ArrayList<Song>) getIntent().getSerializableExtra("songList");
+        if (bundle != null) {
+            songArrayList = (ArrayList<Song>) bundle.getSerializable("songList");
+            currentSongIndex = bundle.getInt("currentSongIndex", 0);
+            playSong(songArrayList.get(currentSongIndex), false);
+        }
 
+        Song song = songArrayList.get(currentSongIndex);
+
+        //not really need it, but still. I mean, i can actually delete it cuz
+        //i've already have one in playSong function, but for better UX. I suppose ?
         Glide.with(this)
                 .load(song.getSongImageUrl())
                 .into(img_songImage);
@@ -187,11 +193,9 @@ public class SongPlayingActivity extends AppCompatActivity {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setDataSource(song.getSongURL());
-
             mediaPlayer.setOnPreparedListener(mp -> {
                 mediaPlayer.start();
 
-                // Cập nhật UI khi bài hát đã chuẩn bị xong
                 Glide.with(this).load(song.getSongImageUrl()).into(img_songImage);
                 tv_songName.setText(song.getSongName());
                 tv_songArtist.setText(song.getSongArtistName());
@@ -200,21 +204,17 @@ public class SongPlayingActivity extends AppCompatActivity {
 
                 updateSeekBar();
 
-                // Lặp bài hát nếu cần
+                // Xử lý khi bài hát kết thúc
                 mediaPlayer.setOnCompletionListener(mp1 -> {
                     if (isLooping) {
-                        playSong(song, isSingleSongMode); // Lặp lại bài hát hiện tại
+                        playSong(song, isSingle);
                     } else if (!isSingleSongMode) {
-                        playNextSong(); // Phát bài tiếp theo nếu trong danh sách
+                        playNextSong();
                     }
                 });
             });
 
-
-            mediaPlayer.prepareAsync(); // Sử dụng chuẩn bị bất đồng bộ
-
-
-
+            mediaPlayer.prepareAsync();
         } catch (Exception e) {
             Log.e("SongPlayingActivity", "Error playing song", e);
         }
@@ -234,33 +234,25 @@ public class SongPlayingActivity extends AppCompatActivity {
         Toast.makeText(this, isShuffling ? "Shuffle ON" : "Shuffle OFF", Toast.LENGTH_SHORT).show();
     }
 
-
     private void playNextSong() {
-        if (isShuffling) {
-            if (!shuffledList.isEmpty()) {
-                currentSongIndex = (currentSongIndex + 1) % shuffledList.size();
-                playSong(shuffledList.get(currentSongIndex), false);
-            }
+        if (isShuffling && !shuffledList.isEmpty()) {
+            currentSongIndex = shuffledList.indexOf(songArrayList.get(currentSongIndex));
+            currentSongIndex = (currentSongIndex + 1) % shuffledList.size();
+            playSong(shuffledList.get(currentSongIndex), false);
         } else {
-            if (!songArrayList.isEmpty()) {
-                currentSongIndex = (currentSongIndex + 1) % songArrayList.size();
-                playSong(songArrayList.get(currentSongIndex), false);
-            }
+            currentSongIndex = (currentSongIndex + 1) % songArrayList.size();
+            playSong(songArrayList.get(currentSongIndex), false);
         }
     }
 
-
     private void playPreviousSong() {
-        if (isShuffling) {
-            if (!shuffledList.isEmpty()) {
-                currentSongIndex = (currentSongIndex - 1 + shuffledList.size()) % shuffledList.size();
-                playSong(shuffledList.get(currentSongIndex), false);
-            }
+        if (isShuffling && !shuffledList.isEmpty()) {
+            currentSongIndex = shuffledList.indexOf(songArrayList.get(currentSongIndex));
+            currentSongIndex = (currentSongIndex - 1 + shuffledList.size()) % shuffledList.size();
+            playSong(shuffledList.get(currentSongIndex), false);
         } else {
-            if (!songArrayList.isEmpty()) {
-                currentSongIndex = (currentSongIndex - 1 + songArrayList.size()) % songArrayList.size();
-                playSong(songArrayList.get(currentSongIndex), false);
-            }
+            currentSongIndex = (currentSongIndex - 1 + songArrayList.size()) % songArrayList.size();
+            playSong(songArrayList.get(currentSongIndex), false);
         }
     }
 

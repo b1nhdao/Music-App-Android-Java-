@@ -45,18 +45,14 @@ public class SongAdapter_PlaylistActivity extends RecyclerView.Adapter<SongAdapt
 
         holder.tv_songArtist.setText(song.getSongArtistName());
         holder.tv_songName.setText(song.getSongName());
-        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onSongClick(song);
-            }
-        });
+        holder.relativeLayout.setOnClickListener(view -> onSongClick(song, position));
     }
 
-    public void onSongClick(Song song){
+    public void onSongClick(Song song, int position){
         Intent intent = new Intent(context, SongPlayingActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("songObject", song);
+        bundle.putSerializable("songList", songArrayList);
+        bundle.putInt("currentSongIndex", position);
         intent.putExtras(bundle);
         context.startActivity(intent);
     }
