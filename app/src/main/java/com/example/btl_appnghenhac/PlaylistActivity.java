@@ -33,7 +33,7 @@ public class PlaylistActivity extends AppCompatActivity {
 
     Button btn_playList;
     TextView tv_playlistName;
-    ImageView img_playlistImage, iv_back;
+    ImageView img_playlistImage, iv_back, img_favourite;
     RecyclerView recyclerView;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final String TAG = "HomeFragment";
@@ -57,6 +57,7 @@ public class PlaylistActivity extends AppCompatActivity {
         iv_back = findViewById(R.id.iv_back);
         iv_back.setVisibility(View.VISIBLE);
         btn_playList = findViewById(R.id.btn_playList);
+        img_favourite = findViewById(R.id.img_favourite);
 
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override

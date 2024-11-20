@@ -82,8 +82,6 @@ public class SongPlayingActivity extends AppCompatActivity {
         tv_timeEnd.setText(convertDurationToString(song.getSongDuration()));
         seekBar.setMax(song.getSongDuration());
 
-//        ArrayList<Song> songArrayList = (ArrayList<Song>) bundle.get()
-
         img_play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -183,11 +181,7 @@ public class SongPlayingActivity extends AppCompatActivity {
     }
 
     private void playSong(Song song, boolean isSingle) {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
+        stopPlaying(); // Đảm bảo dừng và giải phóng MediaPlayer trước
 
         try {
             mediaPlayer = new MediaPlayer();
@@ -196,10 +190,11 @@ public class SongPlayingActivity extends AppCompatActivity {
             mediaPlayer.setOnPreparedListener(mp -> {
                 mediaPlayer.start();
 
+                // Cập nhật giao diện
                 Glide.with(this).load(song.getSongImageUrl()).into(img_songImage);
                 tv_songName.setText(song.getSongName());
                 tv_songArtist.setText(song.getSongArtistName());
-                tv_timeEnd.setText(convertDurationToString(song.getSongDuration()));
+                tv_timeEnd.setText(convertDurationToString(mediaPlayer.getDuration() / 1000));
                 seekBar.setMax(mediaPlayer.getDuration());
 
                 updateSeekBar();
@@ -207,9 +202,9 @@ public class SongPlayingActivity extends AppCompatActivity {
                 // Xử lý khi bài hát kết thúc
                 mediaPlayer.setOnCompletionListener(mp1 -> {
                     if (isLooping) {
-                        playSong(song, isSingle);
+                        playSong(song, isSingle); // Lặp bài hát
                     } else if (!isSingleSongMode) {
-                        playNextSong();
+                        playNextSong(); // Phát bài tiếp theo
                     }
                 });
             });
@@ -217,6 +212,7 @@ public class SongPlayingActivity extends AppCompatActivity {
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
             Log.e("SongPlayingActivity", "Error playing song", e);
+            Toast.makeText(this, "Không thể phát bài hát", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -291,14 +287,16 @@ public class SongPlayingActivity extends AppCompatActivity {
     }
 
 
-    private void stopPlaying(){
-        if(mediaPlayer != null && mediaPlayer.isPlaying()){
-            mediaPlayer.pause();
+    private void stopPlaying() {
+        if (mediaPlayer != null) {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+            }
             mediaPlayer.release();
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.reset();
+            mediaPlayer = null;
         }
     }
+
 
     public String convertDurationToString(int duration){
         int minutes = duration / 60;

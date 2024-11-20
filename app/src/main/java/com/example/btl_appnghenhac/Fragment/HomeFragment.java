@@ -97,7 +97,6 @@ public class HomeFragment extends Fragment {
 
 //    private void getDataPlaylistFromFirebase() {
 //        db.collection("playlist")
-//                .limit(3)
 //                .get()
 //                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 //                    @Override
