@@ -70,20 +70,10 @@ public class LibraryFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recyclerView);
 
-        ArrayList<Playlist> list1 = new ArrayList<>();
-        list1.add(new Playlist(1, R.drawable.stbest, "item name 1"));
-        list1.add(new Playlist(2, R.drawable.stbest, "item name 2"));
-        list1.add(new Playlist(3, R.drawable.stbest, "item name 3"));
-        list1.add(new Playlist(4, R.drawable.stbest, "item name 4"));
-        list1.add(new Playlist(2, R.drawable.stbest, "item name 5"));
-        list1.add(new Playlist(3, R.drawable.ic_launcher_background, "item name 6"));
-        list1.add(new Playlist(3, R.drawable.ic_launcher_background, "item name 7"));
 
-
-        PlaylistAdapter_SearchFragment adapter = new PlaylistAdapter_SearchFragment(list1);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        recyclerView.setAdapter(adapter);
+//        recyclerView.setAdapter(adapter);
 
         edt_search.setText("hello");
 

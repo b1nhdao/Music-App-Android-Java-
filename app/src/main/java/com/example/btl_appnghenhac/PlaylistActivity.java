@@ -63,6 +63,8 @@ public class PlaylistActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 finish();
+                Intent intent = new Intent(PlaylistActivity.this, MainActivity.class);
+                startActivity(intent);
             }
         });
 
