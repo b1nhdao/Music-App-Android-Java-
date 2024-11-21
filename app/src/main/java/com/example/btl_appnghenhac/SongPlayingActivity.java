@@ -23,6 +23,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.example.btl_appnghenhac.Fragment.SearchFragment;
 import com.example.btl_appnghenhac.Object.Song;
 
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class SongPlayingActivity extends AppCompatActivity {
     private Runnable updateSeekBar;
     private MusicService musicService;
     private boolean serviceBound = false;
+    int code;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -81,12 +83,23 @@ public class SongPlayingActivity extends AppCompatActivity {
         getViews();
         iv_back.setVisibility(View.VISIBLE);
 
-        iv_back.setOnClickListener(view -> finish());
+        iv_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                if (code == 1) {
+                    Intent intent = new Intent(SongPlayingActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             songArrayList = (ArrayList<Song>) bundle.getSerializable("songList");
             currentSongIndex = bundle.getInt("currentSongIndex", 0);
+            code = bundle.getInt("code", 0);
             saveCurrentSongToPreferences(songArrayList.get(currentSongIndex));
         }
 

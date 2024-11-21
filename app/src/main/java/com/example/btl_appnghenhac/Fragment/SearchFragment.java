@@ -4,7 +4,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,17 +12,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-import com.example.btl_appnghenhac.Adapter.PlaylistAdapter_SearchFragment;
+import com.example.btl_appnghenhac.Adapter.PlaylistSongAdapter;
 import com.example.btl_appnghenhac.Object.Playlist;
+import com.example.btl_appnghenhac.Object.Song;
 import com.example.btl_appnghenhac.R;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 
 public class SearchFragment extends Fragment {
@@ -76,10 +74,18 @@ public class SearchFragment extends Fragment {
                 String searchValue = edt_search.getText().toString();
                 String selectedCategory = getValueToggleButton(tgbtn_song, tgbtn_artist, tgbtn_album, tgbtn_playlist);
 
-                if (selectedCategory.equals("Playlist")) {
-                    searchPlaylists(searchValue);
-                } else {
-                    Toast.makeText(getContext(), "Chỉ hỗ trợ tìm kiếm playlist tại thời điểm này.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),getValueToggleButton(tgbtn_song, tgbtn_artist, tgbtn_album, tgbtn_playlist) , Toast.LENGTH_SHORT).show();
+
+                switch (selectedCategory) {
+                    case "Playlist":
+                        searchPlaylists(searchValue);
+                        break;
+                    case "Bài hát":
+                        searchSongs(searchValue);
+                        break;
+                    default:
+                        Toast.makeText(getContext(), "Chỉ hỗ trợ tìm kiếm playlist và bài hát tại thời điểm này.", Toast.LENGTH_SHORT).show();
+                        break;
                 }
             }
         });
@@ -99,17 +105,47 @@ public class SearchFragment extends Fragment {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         QuerySnapshot querySnapshot = task.getResult();
-                        ArrayList<Playlist> playlistResults = new ArrayList<>();
+                        ArrayList<Object> playlistResults = new ArrayList<>();
                         if (!querySnapshot.isEmpty()) {
                             for (QueryDocumentSnapshot document : querySnapshot) {
                                 Playlist playlist = document.toObject(Playlist.class);
                                 playlistResults.add(playlist);
                             }
+
                             // Cập nhật RecyclerView với kết quả tìm kiếm
-                            PlaylistAdapter_SearchFragment adapter = new PlaylistAdapter_SearchFragment(getActivity(), playlistResults);
+                            PlaylistSongAdapter adapter = new PlaylistSongAdapter(getActivity(), playlistResults, "playlist");
                             recyclerView.setAdapter(adapter);
                         } else {
                             Toast.makeText(getContext(), "Không tìm thấy playlist nào.", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "Có lỗi xảy ra khi tìm kiếm.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void searchSongs(String songName) {
+        CollectionReference collectionReference = db.collection("song");
+
+        collectionReference
+                .whereGreaterThanOrEqualTo("songName", songName)
+                .whereLessThanOrEqualTo("songName", songName + "\uf8ff")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+                        ArrayList<Object> songResults = new ArrayList<>();
+                        if (!querySnapshot.isEmpty()) {
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                Song song = document.toObject(Song.class);
+                                songResults.add(song);
+                            }
+
+                            // Cập nhật RecyclerView với kết quả tìm kiếm
+                            PlaylistSongAdapter adapter = new PlaylistSongAdapter(getActivity(), songResults, "song");
+                            recyclerView.setAdapter(adapter);
+                        } else {
+                            Toast.makeText(getContext(), "Không tìm thấy bài hát nào.", Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         Toast.makeText(getContext(), "Có lỗi xảy ra khi tìm kiếm.", Toast.LENGTH_SHORT).show();

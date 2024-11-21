@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.btl_appnghenhac.Adapter.PlaylistAdapter_HomeFragment;
@@ -81,13 +82,14 @@ public class HomeFragment extends Fragment {
         playlistList2 = new ArrayList<>();
         playlistList3 = new ArrayList<>();
 
-        adapter1 = new PlaylistAdapter_HomeFragment(getActivity(), playlistList1);
-        adapter2 = new PlaylistAdapter_HomeFragment(getActivity(), playlistList2);
-        adapter3 = new PlaylistAdapter_HomeFragment(getActivity(), playlistList3);
+        adapter1 = new PlaylistAdapter_HomeFragment(getActivity(), playlistList1,0);
+        adapter2 = new PlaylistAdapter_HomeFragment(getActivity(), playlistList2,0);
+        adapter3 = new PlaylistAdapter_HomeFragment(getActivity(), playlistList3,1);
 
         recyclerView1.setAdapter(adapter1);
         recyclerView2.setAdapter(adapter2);
         recyclerView3.setAdapter(adapter3);
+
 
         // Lấy dữ liệu
         getFirstThreePlaylists();

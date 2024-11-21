@@ -27,10 +27,12 @@ public class PlaylistAdapter_HomeFragment extends RecyclerView.Adapter<PlaylistA
 
     private ArrayList<Playlist> playlists;
     private Context context;
+    int codeIsFavourite;
 
-    public PlaylistAdapter_HomeFragment(Context context, ArrayList<Playlist> playlists) {
+    public PlaylistAdapter_HomeFragment(Context context, ArrayList<Playlist> playlists, int codeIsFavourite) {
         this.context = context;
         this.playlists = playlists;
+        this.codeIsFavourite = codeIsFavourite;
     }
 
     @NonNull
@@ -58,11 +60,21 @@ public class PlaylistAdapter_HomeFragment extends RecyclerView.Adapter<PlaylistA
 
     private void onClickPlaylist(Playlist playlist){
 //        Toast.makeText(context, playlist.getPlaylistID() + " ", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(context, PlaylistActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("playlist", playlist);
-        intent.putExtras(bundle);
-        context.startActivity(intent);
+        if (codeIsFavourite == 0){
+            Intent intent = new Intent(context, PlaylistActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("playlist", playlist);
+            intent.putExtras(bundle);
+            context.startActivity(intent);
+        }
+        if (codeIsFavourite == 1){
+            Intent intent = new Intent(context, PlaylistActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("playlist", playlist);
+            bundle.putInt("codeIsFavourite", 1);
+            intent.putExtras(bundle);
+            context.startActivity(intent);
+        }
     }
 
 

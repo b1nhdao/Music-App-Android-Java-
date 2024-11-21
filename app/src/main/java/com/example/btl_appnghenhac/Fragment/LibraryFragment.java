@@ -14,12 +14,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.example.btl_appnghenhac.Adapter.PlaylistAdapter_HomeFragment;
-import com.example.btl_appnghenhac.Adapter.PlaylistAdapter_SearchFragment;
-import com.example.btl_appnghenhac.Object.Playlist;
 import com.example.btl_appnghenhac.R;
-
-import java.util.ArrayList;
 
 public class LibraryFragment extends Fragment {
 

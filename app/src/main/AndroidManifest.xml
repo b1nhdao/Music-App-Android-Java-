@@ -17,6 +17,10 @@
         android:theme="@style/Theme.BTL_AppNgheNhac"
         tools:targetApi="31">
         <receiver
+            android:name=".MusicActionReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
+        <receiver
             android:name=".MusicWidget"
             android:exported="false">
             <intent-filter>

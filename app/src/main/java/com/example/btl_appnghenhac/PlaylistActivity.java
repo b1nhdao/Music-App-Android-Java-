@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -39,6 +40,7 @@ public class PlaylistActivity extends AppCompatActivity {
     private static final String TAG = "HomeFragment";
     SongAdapter_PlaylistActivity adapter;
     ArrayList<Song> songArrayList;
+    int codeIsFavourute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class PlaylistActivity extends AppCompatActivity {
         iv_back.setVisibility(View.VISIBLE);
         btn_playList = findViewById(R.id.btn_playList);
         img_favourite = findViewById(R.id.img_favourite);
+        Playlist playlist;
 
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,7 +72,9 @@ public class PlaylistActivity extends AppCompatActivity {
         });
 
         Bundle bundle = getIntent().getExtras();
-        Playlist playlist = (Playlist) bundle.get("playlist");
+
+        playlist = (Playlist) bundle.get("playlist");
+        codeIsFavourute = bundle.getInt("codeIsFavourite", 0);
 
         tv_playlistName.setText(playlist.getPlaylistName());
         Glide.with(this)
@@ -83,6 +88,8 @@ public class PlaylistActivity extends AppCompatActivity {
 
 
         recyclerView.setAdapter(adapter);
+
+        Toast.makeText(this, codeIsFavourute + "", Toast.LENGTH_SHORT).show();
 
         getDataPlaylistFromFirebase(playlist.getPlaylistID());
 
@@ -105,7 +112,12 @@ public class PlaylistActivity extends AppCompatActivity {
                         if (task.isSuccessful() && task.getResult() != null) {
                             Playlist playlist = task.getResult().toObject(Playlist.class);
                             if (playlist != null && playlist.getSong() != null) {
-                                fetchSongsFromIds(playlist.getSong());
+                                if (codeIsFavourute == 0){
+                                    fetchSongsFromIds(playlist.getSong());
+                                }
+                                else if (codeIsFavourute == 1){
+                                    fetchFavouriteSongs();
+                                }
                             }
                         } else {
                             Log.w(TAG, "Error getting playlist details.", task.getException());
@@ -113,6 +125,30 @@ public class PlaylistActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    private void fetchFavouriteSongs() {
+        songArrayList.clear(); // Xóa danh sách hiện tại
+        db.collection("song")
+                .whereEqualTo("songFavourite", true) // Lọc bài hát có songFavourite = true
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                Song song = document.toObject(Song.class);
+                                if (song != null) {
+                                    songArrayList.add(song);
+                                }
+                            }
+                            adapter.notifyDataSetChanged(); // Cập nhật RecyclerView
+                        } else {
+                            Log.w(TAG, "Error getting favourite songs.", task.getException());
+                        }
+                    }
+                });
+    }
+
 
     // Lấy thông tin bài hát từ danh sách songId
     private void fetchSongsFromIds(ArrayList<Integer> songIds) {

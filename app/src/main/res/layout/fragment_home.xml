@@ -15,8 +15,8 @@
             android:layout_height="150dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="1dp"
-            android:layout_marginTop="95dp" />
+            android:layout_marginStart="-1dp"
+            android:layout_marginTop="83dp" />
 
         <TextView
             android:id="@+id/tv_playlistName"
@@ -24,8 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="67dp"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="72dp"
             android:text="Playlist 1" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -34,8 +34,8 @@
             android:layout_height="150dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="1dp"
-            android:layout_marginTop="301dp" />
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="270dp" />
 
         <TextView
             android:id="@+id/textView5"
@@ -44,7 +44,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="478dp"
+            android:layout_marginTop="448dp"
             android:text="Playlist 3" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -53,8 +53,8 @@
             android:layout_height="150dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="505dp" />
+            android:layout_marginStart="-1dp"
+            android:layout_marginTop="459dp" />
 
         <TextView
             android:id="@+id/textView4"
@@ -62,8 +62,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="34dp"
-            android:layout_marginTop="272dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="257dp"
             android:text="Playlist 2" />
 
 
