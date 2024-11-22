@@ -55,7 +55,7 @@ public class SongOfflineAdapter extends RecyclerView.Adapter<SongOfflineAdapter.
         if (artBytes != null) {
             holder.imageView.setImageBitmap(android.graphics.BitmapFactory.decodeByteArray(artBytes, 0, artBytes.length));
         } else {
-            holder.imageView.setImageResource(R.drawable.ic_launcher_foreground);
+            holder.imageView.setImageResource(R.drawable.baseline_music_note_24);
         }
 
         holder.itemView.setOnClickListener(v -> {

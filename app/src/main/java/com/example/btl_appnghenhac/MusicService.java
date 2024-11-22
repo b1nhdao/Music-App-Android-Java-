@@ -27,6 +27,8 @@ public class MusicService extends Service {
     private final IBinder binder = new LocalBinder();
     private ArrayList<Song> songList;
     private int currentSongIndex;
+    public static final String ACTION_PLAY_PAUSE = "com.example.btl_appnghenhac.ACTION_PLAY_PAUSE";
+    public static final String ACTION_NEXT = "com.example.btl_appnghenhac.ACTION_NEXT";
 
     public class LocalBinder extends Binder {
         MusicService getService() {
@@ -55,24 +57,6 @@ public class MusicService extends Service {
         return binder;
     }
 
-    public void playSong(String songPath) {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.reset();
-        } else {
-            mediaPlayer = new MediaPlayer();
-        }
-        try {
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setDataSource(songPath);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-        } catch (IOException e) {
-            Log.e("MusicService", "Error playing song", e);
-        }
-    }
-
-
     public void playSong(Song song) {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
@@ -97,6 +81,94 @@ public class MusicService extends Service {
         }
     }
 
+    private void createNotification(Song song) {
+        Intent notificationIntent = new Intent(this, SongPlayingActivity.class);
+
+        // Pass song list, current index, and code to the Intent
+        notificationIntent.putExtra("songList", songList);
+        notificationIntent.putExtra("currentSongIndex", currentSongIndex);
+        notificationIntent.putExtra("code", 1);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        // Set up play/pause and next intents as before...
+        Intent playPauseIntent = new Intent(this, MusicService.class);
+        playPauseIntent.setAction(ACTION_PLAY_PAUSE);
+        PendingIntent playPausePendingIntent = PendingIntent.getService(
+                this,
+                0,
+                playPauseIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        Intent nextIntent = new Intent(this, MusicService.class);
+        nextIntent.setAction(ACTION_NEXT);
+        PendingIntent nextPendingIntent = PendingIntent.getService(
+                this,
+                0,
+                nextIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        Notification notification = new NotificationCompat.Builder(this, "MUSIC_CHANNEL")
+                .setContentTitle(song.getSongName())
+                .setContentText(song.getSongArtistName())
+                .setSmallIcon(R.drawable.baseline_music_note_24)
+                .setContentIntent(pendingIntent) // Launch SongPlayingActivity with current info
+                .setAutoCancel(false)
+                .setOngoing(true)
+                .addAction(R.drawable.play1, "Play/Pause", playPausePendingIntent)
+                .addAction(R.drawable.next, "Next", nextPendingIntent)
+                .build();
+
+        startForeground(1, notification);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null && intent.getAction() != null) {
+            switch (intent.getAction()) {
+                case ACTION_PLAY_PAUSE:
+                    playPauseMusic();
+                    break;
+                case ACTION_NEXT:
+                    Log.d("MusicService", "Next song action received");
+                    playNextSong();
+                    break;
+            }
+        }
+        return START_STICKY;
+    }
+
+    public void setSongList(ArrayList<Song> songList) {
+        this.songList = songList;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+
+    public void playPauseMusic() {
+        if (mediaPlayer != null) {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+            } else {
+                mediaPlayer.start();
+            }
+        }
+    }
+
     public void playNextSong() {
         if (songList != null && currentSongIndex < songList.size() - 1) {
             currentSongIndex++;
@@ -108,16 +180,6 @@ public class MusicService extends Service {
         if (songList != null && currentSongIndex > 0) {
             currentSongIndex--;
             playSong(songList.get(currentSongIndex));
-        }
-    }
-
-    public void playPauseMusic() {
-        if (mediaPlayer != null) {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
-            } else {
-                mediaPlayer.start();
-            }
         }
     }
 
@@ -136,31 +198,6 @@ public class MusicService extends Service {
     public void seekTo(int position) {
         if (mediaPlayer != null) {
             mediaPlayer.seekTo(position);
-        }
-    }
-
-    private void createNotification(Song song) {
-        Intent notificationIntent = new Intent(this, SongPlayingActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Notification notification = new NotificationCompat.Builder(this, "MUSIC_CHANNEL")
-                .setContentTitle(song.getSongName())
-                .setContentText(song.getSongArtistName())
-                .setSmallIcon(R.drawable.baseline_music_note_24)
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true)
-                .build();
-
-        startForeground(1, notification);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
         }
     }
 

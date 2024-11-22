@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -75,6 +76,7 @@ public class SongPlayingOfflineActivity extends AppCompatActivity {
 
     private void getViews() {
         iv_back = findViewById(R.id.iv_back);
+        iv_back.setVisibility(View.VISIBLE);
         img_songImage1 = findViewById(R.id.img_songImage1);
         tv_songName = findViewById(R.id.tv_songName);
         tv_songArtist = findViewById(R.id.tv_songArtist);
@@ -116,7 +118,7 @@ public class SongPlayingOfflineActivity extends AppCompatActivity {
                     }
                 }).setDuration(20000).setInterpolator(new LinearInterpolator()).start();
             } else {
-                img_songImage1.setImageResource(R.drawable.ic_launcher_foreground);
+                img_songImage1.setImageResource(R.drawable.baseline_music_note_24);
             }
             tv_timeEnd.setText(convertDurationToString(durationMs / 1000));
 
@@ -126,7 +128,7 @@ public class SongPlayingOfflineActivity extends AppCompatActivity {
             mediaPlayer.setDataSource(this, audioUri);
             mediaPlayer.setOnPreparedListener(mp -> {
                 mediaPlayer.start();
-                img_play.setImageResource(R.drawable.play2);
+                img_play.setImageResource(R.drawable.play1);
                 isPlaying = true;
 
                 // Update SeekBar and duration details
@@ -143,13 +145,13 @@ public class SongPlayingOfflineActivity extends AppCompatActivity {
     private void togglePlayPause() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
-            img_play.setImageResource(R.drawable.play1);
+            img_play.setImageResource(R.drawable.play2);
             isPlaying = false;
             Toast.makeText(SongPlayingOfflineActivity.this, "Paused", Toast.LENGTH_SHORT).show();
         } else {
             if (mediaPlayer != null) {
                 mediaPlayer.start();
-                img_play.setImageResource(R.drawable.play2);
+                img_play.setImageResource(R.drawable.play1);
                 isPlaying = true;
                 Toast.makeText(SongPlayingOfflineActivity.this, "Playing", Toast.LENGTH_SHORT).show();
             }

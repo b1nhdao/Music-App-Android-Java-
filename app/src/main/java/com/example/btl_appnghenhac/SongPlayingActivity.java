@@ -56,6 +56,8 @@ public class SongPlayingActivity extends AppCompatActivity {
             MusicService.LocalBinder binder = (MusicService.LocalBinder) service;
             musicService = binder.getService();
             serviceBound = true;
+
+            musicService.setSongList(songArrayList);
             playCurrentSong();
 
             musicService.setOnCompletionListener(() -> {
@@ -114,6 +116,7 @@ public class SongPlayingActivity extends AppCompatActivity {
         }
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
 
+
         img_play.setOnClickListener(view -> {
             if (musicService != null) {
                 musicService.playPauseMusic();
@@ -158,6 +161,8 @@ public class SongPlayingActivity extends AppCompatActivity {
 
         // Register the broadcast receiver
         IntentFilter filter = new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+        filter.addAction(MusicService.ACTION_PLAY_PAUSE);
+        filter.addAction(MusicService.ACTION_NEXT);
         registerReceiver(appKilledReceiver, filter);
     }
 
@@ -276,6 +281,21 @@ public class SongPlayingActivity extends AppCompatActivity {
     private final BroadcastReceiver appKilledReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (musicService != null) {
+                switch (intent.getAction()) {
+                    case MusicService.ACTION_PLAY_PAUSE:
+                        musicService.playPauseMusic();
+                        if (musicService.isPlaying()) {
+                            img_play.setImageResource(R.drawable.play1);
+                        } else {
+                            img_play.setImageResource(R.drawable.play2);
+                        }
+                        break;
+                    case MusicService.ACTION_NEXT:
+                        playNextSong();
+                        break;
+                }
+            }
             if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(intent.getAction())) {
                 stopService(new Intent(SongPlayingActivity.this, MusicService.class));
             }
