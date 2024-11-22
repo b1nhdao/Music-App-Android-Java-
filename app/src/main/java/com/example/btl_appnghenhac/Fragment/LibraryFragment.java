@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 
 import androidx.fragment.app.Fragment;
@@ -21,6 +22,7 @@ import android.widget.ToggleButton;
 import com.example.btl_appnghenhac.Adapter.SongOfflineAdapter;
 import com.example.btl_appnghenhac.R;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class LibraryFragment extends Fragment {
@@ -71,27 +73,27 @@ public class LibraryFragment extends Fragment {
 
     private ArrayList<String> getAudioFiles() {
         ArrayList<String> audioFiles = new ArrayList<>();
-        ContentResolver contentResolver = requireContext().getContentResolver();
-        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
-        Cursor cursor = contentResolver.query(uri, null, selection, null, null);
 
-        if (cursor != null && cursor.moveToFirst()) {
-            int dataIndex = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+        // Get the path to the Music directory
+        File musicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
 
-            do {
-                String path = cursor.getString(dataIndex);
-                if (path != null && path.endsWith(".mp3")) {
-                    audioFiles.add(path);
+        // Check if the directory exists
+        if (musicDirectory != null && musicDirectory.exists()) {
+            // Get all the files in the directory
+            File[] files = musicDirectory.listFiles();
+
+            if (files != null) {
+                for (File file : files) {
+                    // Add only mp3 files to the list
+                    if (file.isFile() && file.getName().endsWith(".mp3")) {
+                        audioFiles.add(file.getAbsolutePath());
+                    }
                 }
-            } while (cursor.moveToNext());
-
-            cursor.close();
+            }
         }
 
         return audioFiles;
     }
-
     public String getValueToggleButton(ToggleButton toggleButton, ToggleButton toggleButton1) {
         if (toggleButton.isChecked()) {
             return toggleButton.getText().toString();

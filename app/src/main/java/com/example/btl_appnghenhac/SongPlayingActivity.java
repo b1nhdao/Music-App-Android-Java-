@@ -2,17 +2,25 @@ package com.example.btl_appnghenhac;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.MediaStore;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,12 +36,17 @@ import com.example.btl_appnghenhac.Fragment.SearchFragment;
 import com.example.btl_appnghenhac.Object.Song;
 import com.google.android.material.imageview.ShapeableImageView;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class SongPlayingActivity extends AppCompatActivity {
 
-    ImageView img_songImage, iv_back;
+    ImageView img_songImage, iv_back, iv_menu;
     TextView tv_songName, tv_songArtist, tv_timeCurrent, tv_timeEnd;
     ImageView img_shuffle, img_back, img_play, img_skip, img_loop;
     SeekBar seekBar;
@@ -50,30 +63,51 @@ public class SongPlayingActivity extends AppCompatActivity {
     int code;
     ShapeableImageView img_songImage1;
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            MusicService.LocalBinder binder = (MusicService.LocalBinder) service;
-            musicService = binder.getService();
-            serviceBound = true;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
 
-            musicService.setSongList(songArrayList);
-            playCurrentSong();
+    private void onClickDownloadOptionMenu(){
+        if (songArrayList != null && !songArrayList.isEmpty()) {
+            Song currentSong = songArrayList.get(currentSongIndex);
+            downloadSong(currentSong.getSongURL(), currentSong.getSongImageUrl(), currentSong.getSongArtistName(), currentSong.getSongName());
+        } else {
+            Toast.makeText(SongPlayingActivity.this, "No song to download", Toast.LENGTH_SHORT).show();
+        }
+        Toast.makeText(SongPlayingActivity.this, "download", Toast.LENGTH_SHORT).show();
+    }
 
-            musicService.setOnCompletionListener(() -> {
-                if (isLooping) {
-                    playCurrentSong();
-                } else {
-                    playNextSong();
-                }
-            });
+    private void onClicktoFavOptionMenu(){
+        Toast.makeText(SongPlayingActivity.this, "favourite", Toast.LENGTH_SHORT).show();
+
+    }
+
+    private void onClickToPlaylistOptionMenu(){
+        Toast.makeText(SongPlayingActivity.this, "playlist", Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.download){
+            onClickDownloadOptionMenu();
+            return true;
+        }
+        if (item.getItemId() == R.id.toFav){
+            onClicktoFavOptionMenu();
+            return true;
+        }
+        if (item.getItemId() == R.id.toPlaylist){
+            onClickToPlaylistOptionMenu();
+            return true;
         }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            serviceBound = false;
+        else {
+            return super.onOptionsItemSelected(item);
         }
-    };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +119,22 @@ public class SongPlayingActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        iv_menu = findViewById(R.id.iv_menu);
+        iv_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popupMenu = new PopupMenu(SongPlayingActivity.this, iv_menu);
+                popupMenu.getMenuInflater().inflate(R.menu.menu, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        return onOptionsItemSelected(item);
+                    }
+                });
+                popupMenu.show();
+            }
+        });
+
         getViews();
         iv_back.setVisibility(View.VISIBLE);
 
@@ -235,47 +285,30 @@ public class SongPlayingActivity extends AppCompatActivity {
         handler.post(updateSeekBar);
     }
 
-    public String convertDurationToString(int duration) {
-        int minutes = duration / 60;
-        int seconds = duration % 60;
-        return String.format("%d:%02d", minutes, seconds);
-    }
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicService.LocalBinder binder = (MusicService.LocalBinder) service;
+            musicService = binder.getService();
+            serviceBound = true;
 
-    public void getViews() {
-        iv_back = findViewById(R.id.iv_back);
-        img_songImage = findViewById(R.id.img_songImage);
-        tv_songName = findViewById(R.id.tv_songName);
-        tv_songArtist = findViewById(R.id.tv_songArtist);
-        tv_timeCurrent = findViewById(R.id.tv_timeCurrent);
-        tv_timeEnd = findViewById(R.id.tv_timeEnd);
-        img_shuffle = findViewById(R.id.img_shuffle);
-        img_back = findViewById(R.id.img_back);
-        img_play = findViewById(R.id.img_play);
-        img_skip = findViewById(R.id.img_skip);
-        img_loop = findViewById(R.id.img_loop);
-        seekBar = findViewById(R.id.seekBar);
-        img_songImage1 = findViewById(R.id.img_songImage1);
-    }
+            musicService.setSongList(songArrayList);
+            playCurrentSong();
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (serviceBound) {
-            unbindService(serviceConnection);
+            musicService.setOnCompletionListener(() -> {
+                if (isLooping) {
+                    playCurrentSong();
+                } else {
+                    playNextSong();
+                }
+            });
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
             serviceBound = false;
         }
-        unregisterReceiver(appKilledReceiver);
-    }
-
-    private void saveCurrentSongToPreferences(Song song) {
-        SharedPreferences sharedPreferences = getSharedPreferences("MusicPreferences", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("songID", song.getSongID());
-        editor.putString("songName", song.getSongName());
-        editor.putString("songArtist", song.getSongArtistName());
-        editor.putString("songImageUrl", song.getSongImageUrl());
-        editor.apply();
-    }
+    };
 
     // BroadcastReceiver to stop the service when the app is killed
     private final BroadcastReceiver appKilledReceiver = new BroadcastReceiver() {
@@ -301,4 +334,135 @@ public class SongPlayingActivity extends AppCompatActivity {
             }
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (serviceBound) {
+            unbindService(serviceConnection);
+            serviceBound = false;
+        }
+        unregisterReceiver(appKilledReceiver);
+    }
+
+    public String convertDurationToString(int duration) {
+        int minutes = duration / 60;
+        int seconds = duration % 60;
+        return String.format("%d:%02d", minutes, seconds);
+    }
+
+    public void getViews() {
+//        iv_menu.setVisibility(View.VISIBLE);
+        iv_back = findViewById(R.id.iv_back);
+        img_songImage = findViewById(R.id.img_songImage);
+        tv_songName = findViewById(R.id.tv_songName);
+        tv_songArtist = findViewById(R.id.tv_songArtist);
+        tv_timeCurrent = findViewById(R.id.tv_timeCurrent);
+        tv_timeEnd = findViewById(R.id.tv_timeEnd);
+        img_shuffle = findViewById(R.id.img_shuffle);
+        img_back = findViewById(R.id.img_back);
+        img_play = findViewById(R.id.img_play);
+        img_skip = findViewById(R.id.img_skip);
+        img_loop = findViewById(R.id.img_loop);
+        seekBar = findViewById(R.id.seekBar);
+        img_songImage1 = findViewById(R.id.img_songImage1);
+    }
+
+    private void saveCurrentSongToPreferences(Song song) {
+        SharedPreferences sharedPreferences = getSharedPreferences("MusicPreferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("songID", song.getSongID());
+        editor.putString("songName", song.getSongName());
+        editor.putString("songArtist", song.getSongArtistName());
+        editor.putString("songImageUrl", song.getSongImageUrl());
+        editor.apply();
+    }
+    private void downloadSong(String songUrl, String coverUrl, String artist, String songTitle) {
+        new DownloadTask(songUrl, coverUrl, artist, songTitle).execute();
+    }
+
+    private class DownloadTask extends AsyncTask<Void, Void, Boolean> {
+        private String songUrl, coverUrl, artist, songTitle;
+
+        public DownloadTask(String songUrl, String coverUrl, String artist, String songTitle) {
+            this.songUrl = songUrl;
+            this.coverUrl = coverUrl;
+            this.artist = artist;
+            this.songTitle = songTitle;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                // Download MP3
+                URL url = new URL(songUrl);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    return false; // Handle connection error
+                }
+
+                InputStream input = connection.getInputStream();
+                File songFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), songTitle + ".mp3");
+                FileOutputStream output = new FileOutputStream(songFile);
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+
+                while ((bytesRead = input.read(buffer)) != -1) {
+                    output.write(buffer, 0, bytesRead);
+                }
+
+                output.close();
+                input.close();
+
+                // Download Cover Image
+                url = new URL(coverUrl);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    return false;
+                }
+
+                input = connection.getInputStream();
+                File coverFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), songTitle + "_cover.jpg");
+                output = new FileOutputStream(coverFile);
+
+                while ((bytesRead = input.read(buffer)) != -1) {
+                    output.write(buffer, 0, bytesRead);
+                }
+
+                output.close();
+                input.close();
+
+                // Add to MediaStore
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Audio.Media.ARTIST, artist);
+                values.put(MediaStore.Audio.Media.TITLE, songTitle);
+                values.put(MediaStore.Audio.Media.DATA, songFile.getAbsolutePath());
+                values.put(MediaStore.Audio.Media.ALBUM, songTitle);
+                values.put(MediaStore.Audio.Media.ALBUM_ARTIST, artist);
+                values.put(MediaStore.Audio.Media.MIME_TYPE, "audio/mpeg");
+
+                ContentResolver contentResolver = getContentResolver();
+                contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values);
+
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (success) {
+                Toast.makeText(SongPlayingActivity.this, "Download complete", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(SongPlayingActivity.this, "Download failed", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 }
