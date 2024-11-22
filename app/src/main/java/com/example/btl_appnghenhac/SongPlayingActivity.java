@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.bumptech.glide.Glide;
 import com.example.btl_appnghenhac.Fragment.SearchFragment;
 import com.example.btl_appnghenhac.Object.Song;
+import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,6 +48,7 @@ public class SongPlayingActivity extends AppCompatActivity {
     private MusicService musicService;
     private boolean serviceBound = false;
     int code;
+    ShapeableImageView img_songImage1;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -164,8 +167,18 @@ public class SongPlayingActivity extends AppCompatActivity {
             musicService.playSong(currentSong);
 
             if (!isFinishing() && !isDestroyed()) {
-                Glide.with(getApplicationContext()).load(currentSong.getSongImageUrl()).into(img_songImage);
+                Glide.with(getApplicationContext()).load(currentSong.getSongImageUrl()).into(img_songImage1);
             }
+            img_songImage1.animate().rotationBy(360).withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Thực hiện hành động khi kết thúc xoay
+                            img_songImage1.animate().rotationBy(360).withEndAction(this).setDuration(20000)
+                                    .setInterpolator(new LinearInterpolator()).start();
+                        }
+                    }).setDuration(20000)
+                    .setInterpolator(new LinearInterpolator())
+                    .start();
 
             tv_songName.setText(currentSong.getSongName());
             tv_songArtist.setText(currentSong.getSongArtistName());
@@ -236,6 +249,7 @@ public class SongPlayingActivity extends AppCompatActivity {
         img_skip = findViewById(R.id.img_skip);
         img_loop = findViewById(R.id.img_loop);
         seekBar = findViewById(R.id.seekBar);
+        img_songImage1 = findViewById(R.id.img_songImage1);
     }
 
     @Override

@@ -8,7 +8,6 @@
     tools:context=".PlaylistActivity">
 
     <include layout="@layout/action_back"></include>
-
     <TextView
         android:id="@+id/tv_playlistName"
         android:layout_width="match_parent"

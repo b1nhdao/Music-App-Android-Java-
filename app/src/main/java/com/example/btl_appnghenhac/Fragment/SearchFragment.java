@@ -73,9 +73,6 @@ public class SearchFragment extends Fragment {
             public void onClick(View view) {
                 String searchValue = edt_search.getText().toString();
                 String selectedCategory = getValueToggleButton(tgbtn_song, tgbtn_artist, tgbtn_album, tgbtn_playlist);
-
-                Toast.makeText(getActivity(),getValueToggleButton(tgbtn_song, tgbtn_artist, tgbtn_album, tgbtn_playlist) , Toast.LENGTH_SHORT).show();
-
                 switch (selectedCategory) {
                     case "Playlist":
                         searchPlaylists(searchValue);
@@ -98,9 +95,10 @@ public class SearchFragment extends Fragment {
     private void searchPlaylists(String playlistName) {
         CollectionReference collectionReference = db.collection("playlist");
 
+        // Normalize the search term to ignore case, accents, and other diacritics
+        String normalizedPlaylistName = playlistName.toLowerCase();
+
         collectionReference
-                .whereGreaterThanOrEqualTo("playlistName", playlistName)
-                .whereLessThanOrEqualTo("playlistName", playlistName + "\uf8ff")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -109,11 +107,15 @@ public class SearchFragment extends Fragment {
                         if (!querySnapshot.isEmpty()) {
                             for (QueryDocumentSnapshot document : querySnapshot) {
                                 Playlist playlist = document.toObject(Playlist.class);
-                                playlistResults.add(playlist);
+                                String normalizedPlaylistTitle = playlist.getPlaylistName().toLowerCase();
+
+                                if (normalizedPlaylistTitle.contains(normalizedPlaylistName)) {
+                                    playlistResults.add(playlist);
+                                }
                             }
 
-                            // Cập nhật RecyclerView với kết quả tìm kiếm
-                            PlaylistSongAdapter adapter = new PlaylistSongAdapter(getActivity(), playlistResults, "playlist");
+                            // Update RecyclerView with search results
+                            PlaylistSongAdapter adapter = new PlaylistSongAdapter(getActivity(), playlistResults, "playlist", 0);
                             recyclerView.setAdapter(adapter);
                         } else {
                             Toast.makeText(getContext(), "Không tìm thấy playlist nào.", Toast.LENGTH_SHORT).show();
@@ -124,12 +126,14 @@ public class SearchFragment extends Fragment {
                 });
     }
 
+
     private void searchSongs(String songName) {
         CollectionReference collectionReference = db.collection("song");
 
+        // Normalize the search term to ignore case, accents, and other diacritics
+        String normalizedSongName = songName.toLowerCase();
+
         collectionReference
-                .whereGreaterThanOrEqualTo("songName", songName)
-                .whereLessThanOrEqualTo("songName", songName + "\uf8ff")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -138,11 +142,15 @@ public class SearchFragment extends Fragment {
                         if (!querySnapshot.isEmpty()) {
                             for (QueryDocumentSnapshot document : querySnapshot) {
                                 Song song = document.toObject(Song.class);
-                                songResults.add(song);
+                                String normalizedSongTitle = song.getSongName().toLowerCase();
+
+                                if (normalizedSongTitle.contains(normalizedSongName)) {
+                                    songResults.add(song);
+                                }
                             }
 
-                            // Cập nhật RecyclerView với kết quả tìm kiếm
-                            PlaylistSongAdapter adapter = new PlaylistSongAdapter(getActivity(), songResults, "song");
+                            // Update RecyclerView with search results
+                            PlaylistSongAdapter adapter = new PlaylistSongAdapter(getActivity(), songResults, "song", 0);
                             recyclerView.setAdapter(adapter);
                         } else {
                             Toast.makeText(getContext(), "Không tìm thấy bài hát nào.", Toast.LENGTH_SHORT).show();
@@ -152,6 +160,7 @@ public class SearchFragment extends Fragment {
                     }
                 });
     }
+
 
     public String getValueToggleButton(ToggleButton toggleButton, ToggleButton toggleButton1, ToggleButton toggleButton2, ToggleButton toggleButton3) {
         if (toggleButton.isChecked()) {

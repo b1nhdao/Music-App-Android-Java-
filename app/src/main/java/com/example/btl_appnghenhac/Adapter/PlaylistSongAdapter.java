@@ -28,11 +28,13 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
     private Context context;
     private ArrayList<Object> items;
     private String type; // "playlist" or "song"
+    private int onlineCode;
 
-    public PlaylistSongAdapter(Context context, ArrayList<Object> items, String type) {
+    public PlaylistSongAdapter(Context context, ArrayList<Object> items, String type, int onlineCode) {
         this.context = context;
         this.items = items;
         this.type = type;
+        this.onlineCode = onlineCode;
     }
 
     @NonNull
@@ -44,26 +46,31 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
 
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-        if (type.equals("playlist")) {
-            Playlist playlist = (Playlist) items.get(position);
-            holder.textView.setText(playlist.getPlaylistName());
-            Glide.with(context).load(playlist.getPlaylistUrl()).into(holder.imageView);
-            holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    playlistOnClick(playlist);
-                }
-            });
-        } else if (type.equals("song")) {
-            Song song = (Song) items.get(position);
-            holder.textView.setText(song.getSongName());
-            Glide.with(context).load(song.getSongImageUrl()).into(holder.imageView);
-            holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    songOnClick(song, position);
-                }
-            });
+        if (onlineCode == 0){
+            if (type.equals("playlist")) {
+                Playlist playlist = (Playlist) items.get(position);
+                holder.textView.setText(playlist.getPlaylistName());
+                Glide.with(context).load(playlist.getPlaylistUrl()).into(holder.imageView);
+                holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        playlistOnClick(playlist);
+                    }
+                });
+            } else if (type.equals("song")) {
+                Song song = (Song) items.get(position);
+                holder.textView.setText(song.getSongName());
+                Glide.with(context).load(song.getSongImageUrl()).into(holder.imageView);
+                holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        songOnClick(song, position);
+                    }
+                });
+            }
+        }
+        else {
+
         }
     }
 
@@ -86,7 +93,7 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
         }
         bundle.putSerializable("songList", songList);
         bundle.putInt("currentSongIndex", position);
-        bundle.putInt("code", 1);
+        bundle.putInt("code", 1); // code to check if its searching or not
         intent.putExtras(bundle);
         context.startActivity(intent);
     }

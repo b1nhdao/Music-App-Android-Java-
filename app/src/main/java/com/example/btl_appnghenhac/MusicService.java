@@ -55,6 +55,24 @@ public class MusicService extends Service {
         return binder;
     }
 
+    public void playSong(String songPath) {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.reset();
+        } else {
+            mediaPlayer = new MediaPlayer();
+        }
+        try {
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setDataSource(songPath);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+        } catch (IOException e) {
+            Log.e("MusicService", "Error playing song", e);
+        }
+    }
+
+
     public void playSong(Song song) {
         if (mediaPlayer != null) {
             mediaPlayer.stop();

@@ -29,6 +29,9 @@ import com.example.btl_appnghenhac.Object.Song;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.File;
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     RecyclerView recyclerview;
@@ -100,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
         loadSongDetailsFromPreferences();
-
     }
 
     private void loadFragment(Fragment fragment) {
@@ -122,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void loadSongDetailsFromPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("MusicPreferences", MODE_PRIVATE);

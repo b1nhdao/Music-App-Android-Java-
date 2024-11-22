@@ -89,8 +89,6 @@ public class PlaylistActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(adapter);
 
-        Toast.makeText(this, codeIsFavourute + "", Toast.LENGTH_SHORT).show();
-
         getDataPlaylistFromFirebase(playlist.getPlaylistID());
 
         btn_playList.setOnClickListener(new View.OnClickListener() {

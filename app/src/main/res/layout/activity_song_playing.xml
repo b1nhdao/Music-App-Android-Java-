@@ -136,7 +136,20 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="95dp"
         android:layout_marginTop="79dp"
+        
         tools:srcCompat="@tools:sample/avatars" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/img_songImage1"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="95dp"
+        android:layout_marginTop="79dp"
+        android:src="@drawable/ic_launcher_background"
+        app:shapeAppearanceOverlay="@style/roundImageView">
+
+    </com.google.android.material.imageview.ShapeableImageView>
 
     <include layout="@layout/action_back"/>
 
