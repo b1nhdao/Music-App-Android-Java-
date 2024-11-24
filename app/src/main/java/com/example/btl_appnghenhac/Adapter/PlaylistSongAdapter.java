@@ -80,6 +80,17 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
                     }
                 });
             }
+            else if (type.equals("playlist popup")){
+                PlaylistCreated playlist = (PlaylistCreated) items.get(position);
+                holder.textView.setText(playlist.getPlaylistNamec());
+                Glide.with(context).load(playlist.getPlaylistUrlc()).into(holder.imageView);
+                holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        playlistPopUpOnClick(playlist);
+                    }
+                });
+            }
         }
         else {
             PlaylistCreated playlistCreated = (PlaylistCreated) items.get(position);
@@ -92,6 +103,10 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
                 }
             });
         }
+    }
+
+    private void playlistPopUpOnClick(PlaylistCreated playlistCreated){
+
     }
 
     private void playlistCreatedOnClick(PlaylistCreated playlist) {

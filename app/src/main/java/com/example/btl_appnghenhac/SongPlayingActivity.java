@@ -1,5 +1,6 @@
 package com.example.btl_appnghenhac;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -19,6 +20,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -27,17 +29,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.btl_appnghenhac.Adapter.SongAdapter_PlaylistActivity;
-import com.example.btl_appnghenhac.Fragment.SearchFragment;
+import com.example.btl_appnghenhac.Adapter.PlaylistSongAdapter;
+import com.example.btl_appnghenhac.Object.PlaylistCreated;
 import com.example.btl_appnghenhac.Object.Song;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -64,7 +73,15 @@ public class SongPlayingActivity extends AppCompatActivity {
     private MusicService musicService;
     private boolean serviceBound = false;
     int code;
+    Dialog dialog;
     ShapeableImageView img_songImage1;
+    private String TAG = "mytag";
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    PlaylistSongAdapter playlistAdapter;
+    RecyclerView recyclerViewPlaylist;
+
+    ArrayList<PlaylistCreated> playlistCreatedArrayList = new ArrayList<>();
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -87,7 +104,8 @@ public class SongPlayingActivity extends AppCompatActivity {
 
     private void onClickToPlaylistOptionMenu(){
         Toast.makeText(SongPlayingActivity.this, "playlist", Toast.LENGTH_SHORT).show();
-
+        dialog.show();
+        showPlaylistCreated();
     }
 
     @Override
@@ -135,6 +153,15 @@ public class SongPlayingActivity extends AppCompatActivity {
                 popupMenu.show();
             }
         });
+
+        //pop up menu
+        dialog = new Dialog(SongPlayingActivity.this);
+        dialog.setContentView(R.layout.playlist_popup_window);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.custom_dialog_bg));
+        dialog.setCancelable(true);
+
+        recyclerViewPlaylist = dialog.findViewById(R.id.recyclerViewPlaylist);
 
         getViews();
         iv_back.setVisibility(View.VISIBLE);
@@ -497,4 +524,28 @@ public class SongPlayingActivity extends AppCompatActivity {
                     });
         }
     }
+
+    private void showPlaylistCreated() {
+        db.collection("playlistCreated")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            playlistCreatedArrayList.clear();
+                            for (DocumentSnapshot document : task.getResult()) {
+                                PlaylistCreated playlist = document.toObject(PlaylistCreated.class);
+                                playlistCreatedArrayList.add(playlist);
+                            }
+                            playlistAdapter = new PlaylistSongAdapter(SongPlayingActivity.this, new ArrayList<>(playlistCreatedArrayList), "playlistCreated", 0);
+                            recyclerViewPlaylist.setLayoutManager(new LinearLayoutManager(SongPlayingActivity.this, LinearLayoutManager.VERTICAL, false));
+                            recyclerViewPlaylist.setAdapter(playlistAdapter);
+                            playlistAdapter.notifyDataSetChanged();
+                        } else {
+                            Log.w(TAG, "Error getting documents.", task.getException());
+                        }
+                    }
+                });
+    }
+
 }
