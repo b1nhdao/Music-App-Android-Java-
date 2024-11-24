@@ -16,12 +16,15 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.btl_appnghenhac.MusicService;
 import com.example.btl_appnghenhac.Object.Playlist;
 import com.example.btl_appnghenhac.Object.PlaylistCreated;
 import com.example.btl_appnghenhac.Object.Song;
 import com.example.btl_appnghenhac.PlaylistActivity;
 import com.example.btl_appnghenhac.R;
 import com.example.btl_appnghenhac.SongPlayingActivity;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
@@ -30,7 +33,7 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
     private ArrayList<Object> items;
     private String type; // "playlist" or "song"
     private int onlineCode;
-
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     public PlaylistSongAdapter(Context context, ArrayList<Object> items, String type, int onlineCode) {
         this.context = context;
         this.items = items;
@@ -80,7 +83,7 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
                     }
                 });
             }
-            else if (type.equals("playlist popup")){
+            else if (type.equals("playlistPopup")){
                 PlaylistCreated playlist = (PlaylistCreated) items.get(position);
                 holder.textView.setText(playlist.getPlaylistNamec());
                 Glide.with(context).load(playlist.getPlaylistUrlc()).into(holder.imageView);
@@ -105,8 +108,31 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
         }
     }
 
-    private void playlistPopUpOnClick(PlaylistCreated playlistCreated){
+    private void playlistPopUpOnClick(PlaylistCreated playlist) {
+        // Get the current song from the MusicService
+        Song currentSong = getCurrentSongFromService();
 
+        if (currentSong != null) {
+            int songID = currentSong.getSongID(); // Assuming Song class has a getSongID() method to get the song's ID
+
+            db.collection("playlistCreated").document(String.valueOf(playlist.getPlaylistIDc()))
+                    .update("song", FieldValue.arrayUnion(songID))
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(context, "Song added to playlist: " + playlist.getPlaylistNamec(), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "Failed to add song to playlist.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            Toast.makeText(context, "No current song is playing.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private Song getCurrentSongFromService() {
+        // Use context to bind to MusicService and get the current song
+        MusicService musicService = ((SongPlayingActivity) context).getMusicService();
+        return musicService != null ? musicService.getCurrentSong() : null;
     }
 
     private void playlistCreatedOnClick(PlaylistCreated playlist) {

@@ -214,4 +214,6 @@ public class MusicService extends Service {
     public Song getCurrentSong() {
         return songList != null && currentSongIndex >= 0 && currentSongIndex < songList.size() ? songList.get(currentSongIndex) : null;
     }
+
+
 }

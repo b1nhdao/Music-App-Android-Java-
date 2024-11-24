@@ -108,6 +108,10 @@ public class SongPlayingActivity extends AppCompatActivity {
         showPlaylistCreated();
     }
 
+    public MusicService getMusicService() {
+        return musicService;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.download){
@@ -380,7 +384,7 @@ public class SongPlayingActivity extends AppCompatActivity {
     }
 
     public void getViews() {
-//        iv_menu.setVisibility(View.VISIBLE);
+        iv_menu.setVisibility(View.VISIBLE);
         iv_back = findViewById(R.id.iv_back);
         img_songImage = findViewById(R.id.img_songImage);
         tv_songName = findViewById(R.id.tv_songName);
@@ -537,7 +541,7 @@ public class SongPlayingActivity extends AppCompatActivity {
                                 PlaylistCreated playlist = document.toObject(PlaylistCreated.class);
                                 playlistCreatedArrayList.add(playlist);
                             }
-                            playlistAdapter = new PlaylistSongAdapter(SongPlayingActivity.this, new ArrayList<>(playlistCreatedArrayList), "playlistCreated", 0);
+                            playlistAdapter = new PlaylistSongAdapter(SongPlayingActivity.this, new ArrayList<>(playlistCreatedArrayList), "playlistPopup", 0);
                             recyclerViewPlaylist.setLayoutManager(new LinearLayoutManager(SongPlayingActivity.this, LinearLayoutManager.VERTICAL, false));
                             recyclerViewPlaylist.setAdapter(playlistAdapter);
                             playlistAdapter.notifyDataSetChanged();
