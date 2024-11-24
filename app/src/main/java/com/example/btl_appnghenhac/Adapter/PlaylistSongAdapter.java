@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.btl_appnghenhac.Object.Playlist;
+import com.example.btl_appnghenhac.Object.PlaylistCreated;
 import com.example.btl_appnghenhac.Object.Song;
 import com.example.btl_appnghenhac.PlaylistActivity;
 import com.example.btl_appnghenhac.R;
@@ -68,10 +69,37 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
                     }
                 });
             }
+            else if (type.equals("playlistCreated")){
+                PlaylistCreated playlist = (PlaylistCreated) items.get(position);
+                holder.textView.setText(playlist.getPlaylistNamec());
+                Glide.with(context).load(playlist.getPlaylistUrlc()).into(holder.imageView);
+                holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        playlistCreatedOnClick(playlist);
+                    }
+                });
+            }
         }
         else {
-
+            PlaylistCreated playlistCreated = (PlaylistCreated) items.get(position);
+            holder.textView.setText(playlistCreated.getPlaylistNamec());
+            Glide.with(context).load(playlistCreated.getPlaylistUrlc()).into(holder.imageView);
+            holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    playlistCreatedOnClick(playlistCreated);
+                }
+            });
         }
+    }
+
+    private void playlistCreatedOnClick(PlaylistCreated playlist) {
+        Intent intent = new Intent(context, PlaylistActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("playlistCreated", playlist);
+        intent.putExtras(bundle);
+        context.startActivity(intent);
     }
 
     private void playlistOnClick(Playlist playlist) {

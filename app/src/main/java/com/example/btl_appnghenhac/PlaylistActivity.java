@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.btl_appnghenhac.Adapter.SongAdapter_PlaylistActivity;
 import com.example.btl_appnghenhac.Object.Playlist;
+import com.example.btl_appnghenhac.Object.PlaylistCreated;
 import com.example.btl_appnghenhac.Object.Song;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -71,25 +72,35 @@ public class PlaylistActivity extends AppCompatActivity {
             }
         });
 
-        Bundle bundle = getIntent().getExtras();
-
-        playlist = (Playlist) bundle.get("playlist");
-        codeIsFavourute = bundle.getInt("codeIsFavourite", 0);
-
-        tv_playlistName.setText(playlist.getPlaylistName());
-        Glide.with(this)
-                .load(playlist.getPlaylistUrl())
-                .into(img_playlistImage);
-
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         songArrayList = new ArrayList<>();
         adapter = new SongAdapter_PlaylistActivity(songArrayList, this);
 
-
         recyclerView.setAdapter(adapter);
 
-        getDataPlaylistFromFirebase(playlist.getPlaylistID());
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle.containsKey("playlist")){
+            playlist = (Playlist) bundle.get("playlist");
+            tv_playlistName.setText(playlist.getPlaylistName());
+            Glide.with(this)
+                    .load(playlist.getPlaylistUrl())
+                    .into(img_playlistImage);
+            getDataPlaylistFromFirebase(playlist.getPlaylistID());
+        }
+
+        else if (bundle.containsKey("playlistCreated")){
+            PlaylistCreated playlistCreated = (PlaylistCreated) bundle.get("playlistCreated");
+            tv_playlistName.setText(playlistCreated.getPlaylistNamec());
+            Glide.with(this)
+                    .load(playlistCreated.getPlaylistUrlc())
+                    .into(img_playlistImage);
+            getDataPlaylistCreatedFromFirebase(playlistCreated.getPlaylistIDc());
+        }
+
+        codeIsFavourute = bundle.getInt("codeIsFavourite", 0);
+
 
         btn_playList.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,6 +134,27 @@ public class PlaylistActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    private void getDataPlaylistCreatedFromFirebase(int playlistId) {
+        String playlistIdStr = String.valueOf(playlistId);
+        db.collection("playlistCreated").document(playlistIdStr).get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            PlaylistCreated playlistCreated = task.getResult().toObject(PlaylistCreated.class);
+                            if (playlistCreated != null && playlistCreated.getSong() != null) {
+                                if (codeIsFavourute == 0){
+                                    fetchSongsFromIds(playlistCreated.getSong());
+                                }
+                            }
+                        } else {
+                            Log.w(TAG, "Error getting playlist details.", task.getException());
+                        }
+                    }
+                });
+    }
+
 
     private void fetchFavouriteSongs() {
         songArrayList.clear(); // Xóa danh sách hiện tại

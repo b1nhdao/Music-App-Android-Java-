@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,9 +33,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.example.btl_appnghenhac.Adapter.SongAdapter_PlaylistActivity;
 import com.example.btl_appnghenhac.Fragment.SearchFragment;
 import com.example.btl_appnghenhac.Object.Song;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -76,12 +79,10 @@ public class SongPlayingActivity extends AppCompatActivity {
         } else {
             Toast.makeText(SongPlayingActivity.this, "No song to download", Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(SongPlayingActivity.this, "download", Toast.LENGTH_SHORT).show();
     }
 
     private void onClicktoFavOptionMenu(){
-        Toast.makeText(SongPlayingActivity.this, "favourite", Toast.LENGTH_SHORT).show();
-
+        onFavouriteClick(songArrayList.get(currentSongIndex), String.valueOf(songArrayList.get(currentSongIndex).getSongID()));
     }
 
     private void onClickToPlaylistOptionMenu(){
@@ -465,4 +466,35 @@ public class SongPlayingActivity extends AppCompatActivity {
         }
     }
 
+    //yes, i took all from songAdapter
+    public void onFavouriteClick(Song song, String songId){
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        if (!song.isSongFavourite()) {
+            firestore.collection("song").document(songId)
+                    .update("songFavourite", true)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Log.d("FirestoreUpdate", "Đã cập nhật vào danh sách yêu thích");
+                            Toast.makeText(SongPlayingActivity.this, "Đã thêm vào danh sách yêu thích", Toast.LENGTH_SHORT).show();
+                            song.setSongFavourite(true);
+                        } else {
+                            Log.e("FirestoreUpdate", "Cập nhật thất bại", task.getException());
+                            Toast.makeText(SongPlayingActivity.this, "Không thể thêm vào danh sách yêu thích", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            firestore.collection("song").document(songId)
+                    .update("songFavourite", false)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Log.d("FirestoreUpdate", "Đã xóa khỏi danh sách yêu thích");
+                            Toast.makeText(SongPlayingActivity.this, "Đã xóa khỏi danh sách yêu thích", Toast.LENGTH_SHORT).show();
+                            song.setSongFavourite(false);
+                        } else {
+                            Log.e("FirestoreUpdate", "Xóa thất bại", task.getException());
+                            Toast.makeText(SongPlayingActivity.this, "Không thể xóa khỏi danh sách yêu thích", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
 }

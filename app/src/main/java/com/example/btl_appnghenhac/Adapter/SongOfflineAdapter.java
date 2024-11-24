@@ -25,6 +25,11 @@ public class SongOfflineAdapter extends RecyclerView.Adapter<SongOfflineAdapter.
     private Context context;
     private List<String> audioUris;
 
+    public SongOfflineAdapter(Context context){
+        this.context = context;
+    }
+
+
     public SongOfflineAdapter(Context context, List<String> audioUris) {
         this.context = context;
         this.audioUris = audioUris;
