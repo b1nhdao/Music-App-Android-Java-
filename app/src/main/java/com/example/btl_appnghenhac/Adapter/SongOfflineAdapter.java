@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,18 +18,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.btl_appnghenhac.R;
 import com.example.btl_appnghenhac.SongPlayingOfflineActivity;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import android.view.MenuInflater;
+import android.widget.PopupMenu;
 
 public class SongOfflineAdapter extends RecyclerView.Adapter<SongOfflineAdapter.ViewHolder> {
 
     private Context context;
     private List<String> audioUris;
 
-    public SongOfflineAdapter(Context context){
+    public SongOfflineAdapter(Context context) {
         this.context = context;
     }
-
 
     public SongOfflineAdapter(Context context, List<String> audioUris) {
         this.context = context;
@@ -41,6 +44,7 @@ public class SongOfflineAdapter extends RecyclerView.Adapter<SongOfflineAdapter.
         View view = LayoutInflater.from(context).inflate(R.layout.song_item, parent, false);
         return new ViewHolder(view);
     }
+
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
@@ -74,6 +78,21 @@ public class SongOfflineAdapter extends RecyclerView.Adapter<SongOfflineAdapter.
             intent.putStringArrayListExtra("songList", new ArrayList<>(audioUris)); // Pass the entire song list
             context.startActivity(intent);
         });
+
+        holder.itemView.setOnLongClickListener(view -> {
+            PopupMenu popupMenu = new PopupMenu(context, holder.itemView);
+            MenuInflater inflater = popupMenu.getMenuInflater();
+            inflater.inflate(R.menu.menu_remove_playlist, popupMenu.getMenu());
+            popupMenu.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.menu_delete) {
+                    onDeleteMenuClick(audioUri, position);
+                    return true;
+                }
+                return false;
+            });
+            popupMenu.show();
+            return true;
+        });
     }
 
     @Override
@@ -93,6 +112,23 @@ public class SongOfflineAdapter extends RecyclerView.Adapter<SongOfflineAdapter.
             textView = itemView.findViewById(R.id.tv_songName);
             textview2 = itemView.findViewById(R.id.tv_songArtist);
             FAV = itemView.findViewById(R.id.img_favourite);
+        }
+    }
+
+    private void onDeleteMenuClick(String audioUri, int position) {
+        File file = new File(Uri.parse(audioUri).getPath());
+        if (file.exists()) {
+            boolean deleted = file.delete();
+            if (deleted) {
+                Toast.makeText(context, "Song deleted successfully!", Toast.LENGTH_SHORT).show();
+                audioUris.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, audioUris.size());
+            } else {
+                Toast.makeText(context, "Failed to delete the song.", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(context, "File not found!", Toast.LENGTH_SHORT).show();
         }
     }
 }

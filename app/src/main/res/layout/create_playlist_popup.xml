@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="285dp"
+        android:layout_height="496dp">
+
+        <TextView
+            android:id="@+id/tv_playlistNameCreate"
+            android:layout_width="206dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="34dp"
+            android:layout_marginTop="49dp"
+            android:text="Tên playlist: "
+            android:textSize="20dp" />
+
+        <EditText
+            android:id="@+id/edt_playlistNameCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="43dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="31dp"
+            android:layout_marginTop="105dp"
+            android:background="@drawable/input_1"
+            android:ems="10"
+            android:inputType="text"
+            android:paddingStart="10dp"
+            android:hint="Name" />
+
+        <TextView
+            android:id="@+id/tv_playlistImageCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="186dp"
+            android:paddingStart="20dp"
+            android:text="Chọn ảnh"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/btn_pickImage"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="156dp"
+            android:layout_marginTop="178dp"
+            android:background="@drawable/button_1"
+            android:text="Button" />
+
+        <Button
+            android:id="@+id/btn_create"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="61dp"
+            android:layout_marginTop="419dp"
+            android:background="@drawable/button_1"
+            android:text="Tạo playlist mới" />
+
+        <ImageView
+            android:id="@+id/img_playlistCreate"
+            android:layout_width="135dp"
+            android:layout_height="100dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="69dp"
+            android:layout_marginTop="274dp"
+            android:src="@drawable/baseline_music_note_24" />
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

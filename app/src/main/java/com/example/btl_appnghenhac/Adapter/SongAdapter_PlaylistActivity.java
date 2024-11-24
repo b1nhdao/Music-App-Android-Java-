@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.btl_appnghenhac.Object.PlaylistCreated;
 import com.example.btl_appnghenhac.Object.Song;
 import com.example.btl_appnghenhac.R;
 import com.example.btl_appnghenhac.SongPlayingActivity;
@@ -28,10 +31,14 @@ import java.util.ArrayList;
 public class SongAdapter_PlaylistActivity extends RecyclerView.Adapter<SongAdapter_PlaylistActivity.ViewHolder> {
     ArrayList<Song> songArrayList = new ArrayList<Song>();
     Context context;
+    int codeIsLibrary;
+    String playlistID; // for document on FIREBASE so, its a String
 
-    public SongAdapter_PlaylistActivity(ArrayList<Song> songArrayList, Context context) {
+    public SongAdapter_PlaylistActivity(ArrayList<Song> songArrayList, Context context, int codeIsLibrary, String playlistID) {
         this.songArrayList = songArrayList;
         this.context = context;
+        this.codeIsLibrary = codeIsLibrary;
+        this.playlistID = playlistID;
     }
 
     @NonNull
@@ -67,7 +74,6 @@ public class SongAdapter_PlaylistActivity extends RecyclerView.Adapter<SongAdapt
                 }
                 else{
                     holder.img_favourite.setImageResource(R.drawable.baseline_favorite_border_24);
-
                 }
             }
         });
@@ -82,7 +88,55 @@ public class SongAdapter_PlaylistActivity extends RecyclerView.Adapter<SongAdapt
                     .load(R.drawable.baseline_favorite_border_24)
                     .into(holder.img_favourite);
         }
+
+        holder.relativeLayout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (codeIsLibrary == 1) {
+                    PopupMenu popupMenu = new PopupMenu(context, holder.relativeLayout);
+                    MenuInflater inflater = popupMenu.getMenuInflater();
+                    inflater.inflate(R.menu.menu_remove_playlist, popupMenu.getMenu());
+                    popupMenu.setOnMenuItemClickListener(item -> {
+                        if (item.getItemId() == R.id.menu_delete) {
+                            removeSongFromPlaylist(holder.getAdapterPosition());
+                            return true;
+                        }
+                        return false;
+                    });
+                    popupMenu.show();
+                }
+                return true;
+            }
+        });
     }
+
+    private void removeSongFromPlaylist(int position) {
+        if (position < 0 || position >= songArrayList.size()) {
+            Toast.makeText(context, "Invalid song selected.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Get the song to delete
+        Song songToRemove = songArrayList.get(position);
+        String songId = String.valueOf(songToRemove.getSongID());
+
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        firestore.collection("playlistCreated").document(playlistID)
+                .update("song", com.google.firebase.firestore.FieldValue.arrayRemove(songId))
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Remove the song from the local list and update the RecyclerView
+                        songArrayList.remove(position);
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, songArrayList.size());
+                        Toast.makeText(context, "Song removed from playlist successfully!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.w("FirestoreUpdate", "Error deleting song from playlist.", task.getException());
+                        Toast.makeText(context, "Failed to remove song from playlist.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
 
     public void onFavouriteClick(Song song, String songId){
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();

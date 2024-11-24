@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.btl_appnghenhac.Adapter.SongAdapter_PlaylistActivity;
+import com.example.btl_appnghenhac.Adapter.PlaylistSongAdapter;
 import com.example.btl_appnghenhac.Object.Playlist;
 import com.example.btl_appnghenhac.Object.PlaylistCreated;
 import com.example.btl_appnghenhac.Object.Song;
@@ -39,9 +40,11 @@ public class PlaylistActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final String TAG = "HomeFragment";
-    SongAdapter_PlaylistActivity adapter;
+    RecyclerView.Adapter adapter;
     ArrayList<Song> songArrayList;
     int codeIsFavourute;
+    int codeLibrary = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +64,6 @@ public class PlaylistActivity extends AppCompatActivity {
         iv_back.setVisibility(View.VISIBLE);
         btn_playList = findViewById(R.id.btn_playList);
         img_favourite = findViewById(R.id.img_favourite);
-        Playlist playlist;
 
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,43 +77,55 @@ public class PlaylistActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         songArrayList = new ArrayList<>();
-        adapter = new SongAdapter_PlaylistActivity(songArrayList, this);
-
-        recyclerView.setAdapter(adapter);
 
         Bundle bundle = getIntent().getExtras();
 
-        if (bundle.containsKey("playlist")){
-            playlist = (Playlist) bundle.get("playlist");
+        if (bundle.containsKey("playlist")) {
+            Playlist playlist = (Playlist) bundle.get("playlist");
             tv_playlistName.setText(playlist.getPlaylistName());
             Glide.with(this)
                     .load(playlist.getPlaylistUrl())
                     .into(img_playlistImage);
+
+            // Use SongAdapter_PlaylistActivity for playlist data
+            String playlistId = String.valueOf(playlist.getPlaylistID());
+            adapter = new SongAdapter_PlaylistActivity(songArrayList, this, 1, playlistId); // Pass the playlist ID
+
+            recyclerView.setAdapter(adapter);
             getDataPlaylistFromFirebase(playlist.getPlaylistID());
         }
-
-        else if (bundle.containsKey("playlistCreated")){
+        else if (bundle.containsKey("playlistCreated")) {
             PlaylistCreated playlistCreated = (PlaylistCreated) bundle.get("playlistCreated");
+            String playlistId = String.valueOf(playlistCreated.getPlaylistIDc());
             tv_playlistName.setText(playlistCreated.getPlaylistNamec());
             Glide.with(this)
                     .load(playlistCreated.getPlaylistUrlc())
                     .into(img_playlistImage);
+
+            // Use PlaylistSongAdapter for playlistCreated data
+            adapter = new SongAdapter_PlaylistActivity(songArrayList, this,  1, playlistId);
+            recyclerView.setAdapter(adapter);
             getDataPlaylistCreatedFromFirebase(playlistCreated.getPlaylistIDc());
+            codeLibrary = 1;
         }
 
         codeIsFavourute = bundle.getInt("codeIsFavourite", 0);
 
-
         btn_playList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent2 = new Intent(PlaylistActivity.this, SongPlayingActivity.class);
-                intent2.putExtra("songList", songArrayList);
-                intent2.putExtra("songObject", songArrayList.get(0)); // 'selectedSong' phải là đối tượng kiểu Song
-                startActivity(intent2);
+                if (songArrayList.isEmpty()) {
+                    Toast.makeText(PlaylistActivity.this, "Playlist is empty.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent2 = new Intent(PlaylistActivity.this, SongPlayingActivity.class);
+                    intent2.putExtra("songList", songArrayList);
+                    intent2.putExtra("songObject", songArrayList.get(0)); // 'selectedSong' must be of type Song
+                    startActivity(intent2);
+                }
             }
         });
     }
+
     private void getDataPlaylistFromFirebase(int playlistId) {
         String playlistIdStr = String.valueOf(playlistId);
         db.collection("playlist").document(playlistIdStr).get()
@@ -121,10 +135,9 @@ public class PlaylistActivity extends AppCompatActivity {
                         if (task.isSuccessful() && task.getResult() != null) {
                             Playlist playlist = task.getResult().toObject(Playlist.class);
                             if (playlist != null && playlist.getSong() != null) {
-                                if (codeIsFavourute == 0){
+                                if (codeIsFavourute == 0) {
                                     fetchSongsFromIds(playlist.getSong());
-                                }
-                                else if (codeIsFavourute == 1){
+                                } else if (codeIsFavourute == 1) {
                                     fetchFavouriteSongs();
                                 }
                             }
@@ -144,7 +157,7 @@ public class PlaylistActivity extends AppCompatActivity {
                         if (task.isSuccessful() && task.getResult() != null) {
                             PlaylistCreated playlistCreated = task.getResult().toObject(PlaylistCreated.class);
                             if (playlistCreated != null && playlistCreated.getSong() != null) {
-                                if (codeIsFavourute == 0){
+                                if (codeIsFavourute == 0) {
                                     fetchSongsFromIds(playlistCreated.getSong());
                                 }
                             }
@@ -155,11 +168,10 @@ public class PlaylistActivity extends AppCompatActivity {
                 });
     }
 
-
     private void fetchFavouriteSongs() {
-        songArrayList.clear(); // Xóa danh sách hiện tại
+        songArrayList.clear();
         db.collection("song")
-                .whereEqualTo("songFavourite", true) // Lọc bài hát có songFavourite = true
+                .whereEqualTo("songFavourite", true)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -171,7 +183,7 @@ public class PlaylistActivity extends AppCompatActivity {
                                     songArrayList.add(song);
                                 }
                             }
-                            adapter.notifyDataSetChanged(); // Cập nhật RecyclerView
+                            adapter.notifyDataSetChanged();
                         } else {
                             Log.w(TAG, "Error getting favourite songs.", task.getException());
                         }
@@ -179,8 +191,6 @@ public class PlaylistActivity extends AppCompatActivity {
                 });
     }
 
-
-    // Lấy thông tin bài hát từ danh sách songId
     private void fetchSongsFromIds(ArrayList<Integer> songIds) {
         songArrayList.clear();
         for (int songId : songIds) {

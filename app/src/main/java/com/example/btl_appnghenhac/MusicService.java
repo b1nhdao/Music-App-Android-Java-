@@ -57,7 +57,8 @@ public class MusicService extends Service {
         return binder;
     }
 
-    public void playSong(Song song) {
+    public void playSong(Song song, int songIndex) {
+        this.currentSongIndex = songIndex; // Update current song index
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.reset();
@@ -172,14 +173,14 @@ public class MusicService extends Service {
     public void playNextSong() {
         if (songList != null && currentSongIndex < songList.size() - 1) {
             currentSongIndex++;
-            playSong(songList.get(currentSongIndex));
+            playSong(songList.get(currentSongIndex), currentSongIndex);
         }
     }
 
     public void playPreviousSong() {
         if (songList != null && currentSongIndex > 0) {
             currentSongIndex--;
-            playSong(songList.get(currentSongIndex));
+            playSong(songList.get(currentSongIndex), currentSongIndex);
         }
     }
 

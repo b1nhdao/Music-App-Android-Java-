@@ -66,7 +66,6 @@ public class SongPlayingActivity extends AppCompatActivity {
     int currentSongIndex = 0;
     boolean isLooping = false;
     boolean isShuffling = false;
-    private boolean isSingleSongMode = false;
     private ArrayList<Song> shuffledList = new ArrayList<>();
     private Handler handler = new Handler();
     private Runnable updateSeekBar;
@@ -103,7 +102,6 @@ public class SongPlayingActivity extends AppCompatActivity {
     }
 
     private void onClickToPlaylistOptionMenu(){
-        Toast.makeText(SongPlayingActivity.this, "playlist", Toast.LENGTH_SHORT).show();
         dialog.show();
         showPlaylistCreated();
     }
@@ -251,7 +249,7 @@ public class SongPlayingActivity extends AppCompatActivity {
     private void playCurrentSong() {
         if (songArrayList != null && !songArrayList.isEmpty() && musicService != null) {
             Song currentSong = songArrayList.get(currentSongIndex);
-            musicService.playSong(currentSong);
+            musicService.playSong(currentSong, currentSongIndex); // Pass song and index
 
             if (!isFinishing() && !isDestroyed()) {
                 Glide.with(getApplicationContext()).load(currentSong.getSongImageUrl()).into(img_songImage1);
@@ -259,7 +257,6 @@ public class SongPlayingActivity extends AppCompatActivity {
             img_songImage1.animate().rotationBy(360).withEndAction(new Runnable() {
                         @Override
                         public void run() {
-                            // Thực hiện hành động khi kết thúc xoay
                             img_songImage1.animate().rotationBy(360).withEndAction(this).setDuration(20000)
                                     .setInterpolator(new LinearInterpolator()).start();
                         }

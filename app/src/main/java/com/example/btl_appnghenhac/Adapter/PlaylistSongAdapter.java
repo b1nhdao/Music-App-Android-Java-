@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -82,7 +84,26 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
                         playlistCreatedOnClick(playlist);
                     }
                 });
+
+                holder.relativeLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        PopupMenu popupMenu = new PopupMenu(context, holder.relativeLayout);
+                        MenuInflater inflater = popupMenu.getMenuInflater();
+                        inflater.inflate(R.menu.menu_remove_playlist, popupMenu.getMenu());
+                        popupMenu.setOnMenuItemClickListener(item -> {
+                            if (item.getItemId() == R.id.menu_delete) {
+                                deleteMenuOnClick(holder.getAdapterPosition());
+                                return true;
+                            }
+                            return false;
+                        });
+                        popupMenu.show();
+                        return true;
+                    }
+                });
             }
+
             else if (type.equals("playlistPopup")){
                 PlaylistCreated playlist = (PlaylistCreated) items.get(position);
                 holder.textView.setText(playlist.getPlaylistNamec());
@@ -113,7 +134,7 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
         Song currentSong = getCurrentSongFromService();
 
         if (currentSong != null) {
-            int songID = currentSong.getSongID(); // Assuming Song class has a getSongID() method to get the song's ID
+            int songID = currentSong.getSongID();
 
             db.collection("playlistCreated").document(String.valueOf(playlist.getPlaylistIDc()))
                     .update("song", FieldValue.arrayUnion(songID))
@@ -130,7 +151,6 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
     }
 
     private Song getCurrentSongFromService() {
-        // Use context to bind to MusicService and get the current song
         MusicService musicService = ((SongPlayingActivity) context).getMusicService();
         return musicService != null ? musicService.getCurrentSong() : null;
     }
@@ -166,6 +186,33 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
         intent.putExtras(bundle);
         context.startActivity(intent);
     }
+
+    private void deleteMenuOnClick(int position) {
+        if (position < 0 || position >= items.size()) {
+            Toast.makeText(context, "Invalid playlist selected.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        PlaylistCreated playlistToDelete = (PlaylistCreated) items.get(position);
+        String documentId = String.valueOf(playlistToDelete.getPlaylistIDc());
+
+        db.collection("playlistCreated")
+                .document(documentId)
+                .delete()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(context, "Playlist deleted successfully!", Toast.LENGTH_SHORT).show();
+
+                        // Remove the item from the list and notify adapter
+                        items.remove(position);
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, items.size());
+                    } else {
+                        Toast.makeText(context, "Failed to delete the playlist.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
 
     @Override
     public int getItemCount() {

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 public class PlaylistCreated implements Serializable {
     int playlistIDc;
-    int playlistImagec;
     String playlistNamec;
     String playlistUrlc;
     private ArrayList<Integer> song;
@@ -14,13 +13,14 @@ public class PlaylistCreated implements Serializable {
 
     }
 
-    public PlaylistCreated(int playlistIDc, int playlistImagec, String playlistNamec, String playlistUrlc, ArrayList<Integer> songc) {
+
+    public PlaylistCreated(int playlistIDc, String playlistNamec, String playlistUrlc, ArrayList<Integer> songc) {
         this.playlistIDc = playlistIDc;
-        this.playlistImagec = playlistImagec;
         this.playlistNamec = playlistNamec;
         this.playlistUrlc = playlistUrlc;
         this.song = song;
     }
+
 
     public int getPlaylistIDc() {
         return playlistIDc;
@@ -28,14 +28,6 @@ public class PlaylistCreated implements Serializable {
 
     public void setPlaylistIDc(int playlistIDc) {
         this.playlistIDc = playlistIDc;
-    }
-
-    public int getPlaylistImagec() {
-        return playlistImagec;
-    }
-
-    public void setPlaylistImagec(int playlistImagec) {
-        this.playlistImagec = playlistImagec;
     }
 
     public String getPlaylistNamec() {
