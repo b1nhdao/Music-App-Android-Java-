@@ -9,16 +9,16 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="62dp"
-        android:layout_marginEnd="134dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="112dp"
+        android:src="@drawable/logo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="86dp"
-        tools:srcCompat="@tools:sample/avatars" />
+        tools:layout_editor_absoluteY="86dp" />
 
     <TextView
         android:id="@+id/textView"
@@ -28,7 +28,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="50dp"
         android:layout_marginTop="256dp"
-        android:text="Hello,"
+        android:text="Xin Chào"
         android:textSize="26sp"
         android:textStyle="bold"/>
 
@@ -40,7 +40,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="47dp"
         android:layout_marginTop="302dp"
-        android:text="Let's get started"
+        android:text="Hãy tạo một trải nghiệm mới"
         android:textSize="26sp"
         android:textStyle="bold" />
 
@@ -54,7 +54,7 @@
         android:layout_marginTop="367dp"
         android:background="@drawable/input_1"
         android:ems="10"
-        android:hint="Username"
+        android:hint="Tên đăng nhập"
         android:inputType="text"
         android:paddingStart="16dp" />
 
@@ -68,7 +68,7 @@
         android:layout_marginTop="432dp"
         android:background="@drawable/input_1"
         android:ems="10"
-        android:hint="Password"
+        android:hint="Mật khẩu"
         android:inputType="textPassword"
         android:paddingStart="16dp" />
 
@@ -82,7 +82,7 @@
         android:layout_marginTop="494dp"
         android:background="@drawable/input_1"
         android:ems="10"
-        android:hint="Confirm Password"
+        android:hint="Nhập lại mật khâu"
         android:inputType="textPassword"
         android:paddingStart="16dp" />
 
@@ -95,7 +95,7 @@
         android:layout_marginStart="66dp"
         android:layout_marginTop="568dp"
         android:background="@drawable/button_1"
-        android:text="Create Account" />
+        android:text="Tạo tài khoản" />
 
     <TextView
         android:id="@+id/textView3"
@@ -103,9 +103,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="645dp"
-        android:text="Already have an account ?"
+        android:layout_marginStart="83dp"
+        android:layout_marginTop="647dp"
+        android:text="Đã có tài khoản ?"
         android:textSize="16sp" />
 
     <TextView
@@ -114,9 +114,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="645dp"
+        android:layout_marginTop="647dp"
         android:layout_marginEnd="75dp"
-        android:text="Back to login"
+        android:text="Trở lại đăng nhập"
         android:textSize="16sp"
         android:textStyle="bold" />
 </RelativeLayout>

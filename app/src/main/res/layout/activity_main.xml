@@ -11,12 +11,24 @@
     <include layout="@layout/widget_song"></include>
 
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/frame_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_anchor="@+id/frame_layout"
-        app:layout_anchorGravity="center" />
+        app:layout_anchorGravity="center" >
+
+        <Button
+            android:id="@+id/btn_viewUsers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="47dp"
+            android:layout_marginBottom="143dp"
+            android:visibility="gone"
+            android:text="view users" />
+    </RelativeLayout>
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:layout_width="match_parent"

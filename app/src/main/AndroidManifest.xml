@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -20,13 +20,11 @@
         android:theme="@style/Theme.BTL_AppNgheNhac"
         tools:targetApi="31">
         <activity
+            android:name=".ViewUsersActivity"
+            android:exported="false" />
+        <activity
             android:name=".SongPlayingOfflineActivity"
             android:exported="false" />
-
-        <receiver
-            android:name=".MusicActionReceiver"
-            android:enabled="true"
-            android:exported="true" />
 
         <service
             android:name=".MusicService"
@@ -54,11 +52,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

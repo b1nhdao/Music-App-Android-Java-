@@ -45,6 +45,7 @@ public class HomeFragment extends Fragment {
     PlaylistAdapter_HomeFragment adapter1, adapter2, adapter3;
     ArrayList<Playlist> playlistList1, playlistList2, playlistList3;
     DocumentSnapshot lastVisible1, lastVisible2;
+    TextView tv_name, tv_viewUsers;
 
     public HomeFragment() {
 
@@ -90,11 +91,16 @@ public class HomeFragment extends Fragment {
         recyclerView2.setAdapter(adapter2);
         recyclerView3.setAdapter(adapter3);
 
+        tv_viewUsers = view.findViewById(R.id.tv_viewUsers);
+        tv_name = view.findViewById(R.id.tv_name);
+        Bundle bundle = getActivity().getIntent().getExtras();
+        if (bundle != null){
+            tv_name.setText("Welcome " + bundle.get("username"));
+        }
 
         // Lấy dữ liệu
         getFirstThreePlaylists();
         return view;
-
     }
 
 //    private void getDataPlaylistFromFirebase() {

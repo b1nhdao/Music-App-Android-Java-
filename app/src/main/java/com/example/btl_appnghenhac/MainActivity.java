@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -37,13 +38,12 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageView img_songImage, img_play, img_next;
+    ImageView img_songImage, img_play, img_next, iv_back;
     TextView tv_songName, tv_songArtist;
     FirebaseFirestore db;
     MusicService musicService;
     boolean serviceBound = false;
-
-    TextView tv_sleepTime;
+    Button btn_viewUsers;
 
     private BroadcastReceiver miniPlayerUpdateReceiver = new BroadcastReceiver() {
         @Override
@@ -94,6 +94,22 @@ public class MainActivity extends AppCompatActivity {
         img_next = findViewById(R.id.img_next);
         tv_songName = findViewById(R.id.tv_songName);
         tv_songArtist = findViewById(R.id.tv_songArtist);
+        btn_viewUsers = findViewById(R.id.btn_viewUsers);
+
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null){
+            if (bundle.getInt("role",2) == 1){
+                btn_viewUsers.setVisibility(View.VISIBLE);
+            }
+        }
+
+        btn_viewUsers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ViewUsersActivity.class);
+                startActivity(intent);
+            }
+        });
 
         db = FirebaseFirestore.getInstance();
 
