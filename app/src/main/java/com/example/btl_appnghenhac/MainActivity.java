@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,9 +41,9 @@ public class MainActivity extends AppCompatActivity {
     TextView tv_songName, tv_songArtist;
     FirebaseFirestore db;
     MusicService musicService;
-    Song currentSong;
     boolean serviceBound = false;
-    int songID;
+
+    TextView tv_sleepTime;
 
     private BroadcastReceiver miniPlayerUpdateReceiver = new BroadcastReceiver() {
         @Override
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
         setContentView(R.layout.activity_main);
+
         img_songImage = findViewById(R.id.img_songImage);
         img_play = findViewById(R.id.img_play);
         img_next = findViewById(R.id.img_next);

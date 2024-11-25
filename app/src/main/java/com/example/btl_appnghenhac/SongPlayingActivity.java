@@ -60,7 +60,7 @@ import java.util.Collections;
 public class SongPlayingActivity extends AppCompatActivity {
 
     ImageView img_songImage, iv_back, iv_menu;
-    TextView tv_songName, tv_songArtist, tv_timeCurrent, tv_timeEnd;
+    TextView tv_songName, tv_songArtist, tv_timeCurrent, tv_timeEnd, tv_sleepTime;
     ImageView img_shuffle, img_back, img_play, img_skip, img_loop;
     SeekBar seekBar;
     ArrayList<Song> songArrayList;
@@ -73,17 +73,19 @@ public class SongPlayingActivity extends AppCompatActivity {
     private MusicService musicService;
     private boolean serviceBound = false;
     int code;
-    Dialog dialog;
+    Dialog dialog, dialogTime;
     ShapeableImageView img_songImage1;
     private String TAG = "mytag";
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     PlaylistSongAdapter playlistAdapter;
     RecyclerView recyclerViewPlaylist;
+    Runnable sleepRunnable;
+    Handler sleepHandler = new Handler();
 
-    TextView tv_sleepTime;
 
     ArrayList<PlaylistCreated> playlistCreatedArrayList = new ArrayList<>();
 
+    int sleepTimeInMinutes = -1;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -127,11 +129,70 @@ public class SongPlayingActivity extends AppCompatActivity {
             onClickToPlaylistOptionMenu();
             return true;
         }
-
-        else {
-            return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.min5){
+            sleepTimeInMinutes = 1;
+            setSleepTimer(sleepTimeInMinutes);
+            Toast.makeText(this, "Hẹn giờ tắt sau " + sleepTimeInMinutes + " phút", Toast.LENGTH_SHORT).show();
+            return true;
         }
+        if (item.getItemId() == R.id.min10){
+            sleepTimeInMinutes = 10;
+            setSleepTimer(sleepTimeInMinutes);
+            Toast.makeText(this, "Hẹn giờ tắt sau " + sleepTimeInMinutes + " phút", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        if (item.getItemId() == R.id.min15){
+            sleepTimeInMinutes = 15;
+            setSleepTimer(sleepTimeInMinutes);
+            Toast.makeText(this, "Hẹn giờ tắt sau " + sleepTimeInMinutes + " phút", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        if (item.getItemId() == R.id.min20){
+            sleepTimeInMinutes = 20;
+            setSleepTimer(sleepTimeInMinutes);
+            Toast.makeText(this, "Hẹn giờ tắt sau " + sleepTimeInMinutes + " phút", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        if (item.getItemId() == R.id.other){
+            dialogTime.show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
+
+    private void setSleepTimer(int minutes) {
+        if (sleepRunnable != null) {
+            sleepHandler.removeCallbacks(sleepRunnable);
+        }
+
+        final int sleepTimeMillis = minutes * 5 * 1000; // Corrected to set timer in minutes
+        sleepRunnable = () -> {
+            if (musicService != null && musicService.isPlaying()) {
+                musicService.stopSelf();
+            }
+            musicService.playPauseMusic();
+            Toast.makeText(SongPlayingActivity.this, "Đã đến giờ tắt, chúc bạn ngủ ngon !", Toast.LENGTH_SHORT).show();
+        };
+
+        sleepHandler.postDelayed(sleepRunnable, sleepTimeMillis);
+
+        // Display remaining time in sleep timer TextView
+        sleepHandler.post(new Runnable() {
+            int remainingTime = sleepTimeMillis / 1000;
+
+            @Override
+            public void run() {
+                if (remainingTime > 0) {
+                    tv_sleepTime.setText("Hẹn giờ: " + (remainingTime / 60) + "m " + (remainingTime % 60) + "s");
+                    remainingTime--;
+                    sleepHandler.postDelayed(this, 1000);
+                } else {
+                    tv_sleepTime.setText("Sleep timer ended");
+                }
+            }
+        });
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,7 +204,24 @@ public class SongPlayingActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        iv_menu = findViewById(R.id.iv_menu);
+        getViews();
+
+        tv_sleepTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(SongPlayingActivity.this, sleepTimeInMinutes + "", Toast.LENGTH_SHORT).show();
+                PopupMenu popupMenu = new PopupMenu(SongPlayingActivity.this, tv_sleepTime);
+                popupMenu.getMenuInflater().inflate(R.menu.menu_pick_time_sleep, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        return onOptionsItemSelected(item);
+                    }
+                });
+                popupMenu.show();
+            }
+        });
+
         iv_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -159,6 +237,7 @@ public class SongPlayingActivity extends AppCompatActivity {
             }
         });
 
+
         //pop up menu
         dialog = new Dialog(SongPlayingActivity.this);
         dialog.setContentView(R.layout.playlist_popup_window);
@@ -166,9 +245,15 @@ public class SongPlayingActivity extends AppCompatActivity {
         dialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.custom_dialog_bg));
         dialog.setCancelable(true);
 
+        //another shit
+        dialogTime = new Dialog(SongPlayingActivity.this);
+        dialogTime.setContentView(R.layout.playlist_popup_window);
+        dialogTime.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialogTime.getWindow().setBackgroundDrawable(getDrawable(R.drawable.custom_dialog_bg));
+        dialogTime.setCancelable(true);
+
         recyclerViewPlaylist = dialog.findViewById(R.id.recyclerViewPlaylist);
 
-        getViews();
         iv_back.setVisibility(View.VISIBLE);
 
         iv_back.setOnClickListener(new View.OnClickListener() {
@@ -183,12 +268,6 @@ public class SongPlayingActivity extends AppCompatActivity {
             }
         });
 
-        tv_sleepTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -260,20 +339,12 @@ public class SongPlayingActivity extends AppCompatActivity {
     private void playCurrentSong() {
         if (songArrayList != null && !songArrayList.isEmpty() && musicService != null) {
             Song currentSong = songArrayList.get(currentSongIndex);
-            musicService.playSong(currentSong, currentSongIndex); // Pass song and index
+            musicService.playSong(currentSong, currentSongIndex); // Play song and notify MusicService
 
+            // Update UI
             if (!isFinishing() && !isDestroyed()) {
                 Glide.with(getApplicationContext()).load(currentSong.getSongImageUrl()).into(img_songImage1);
             }
-            img_songImage1.animate().rotationBy(360).withEndAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            img_songImage1.animate().rotationBy(360).withEndAction(this).setDuration(20000)
-                                    .setInterpolator(new LinearInterpolator()).start();
-                        }
-                    }).setDuration(20000)
-                    .setInterpolator(new LinearInterpolator())
-                    .start();
 
             tv_songName.setText(currentSong.getSongName());
             tv_songArtist.setText(currentSong.getSongArtistName());
@@ -304,6 +375,8 @@ public class SongPlayingActivity extends AppCompatActivity {
     private void stopMusicService() {
         Intent serviceIntent = new Intent(this, MusicService.class);
         stopService(serviceIntent);
+        unbindService(serviceConnection);
+        serviceBound = false;
     }
 
     private void playNextSong() {
@@ -414,6 +487,7 @@ public class SongPlayingActivity extends AppCompatActivity {
     }
 
     public void getViews() {
+        iv_menu = findViewById(R.id.iv_menu);
         iv_menu.setVisibility(View.VISIBLE);
         iv_back = findViewById(R.id.iv_back);
         img_songImage = findViewById(R.id.img_songImage);

@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".Fragment.HomeFragment">
     <include layout="@layout/action_back" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
