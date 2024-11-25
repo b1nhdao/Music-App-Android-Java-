@@ -29,6 +29,20 @@
         android:textSize="24sp"
         android:layout_marginLeft="10dp" />
 
+    <TextView
+        android:id="@+id/tv_sleepTime"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:text="Welcome"
+        android:textColor="@color/white"
+        android:paddingStart="130dp"
+        android:textSize="24sp"
+        android:visibility="gone"/>
+
     <ImageView
         android:id="@+id/iv_menu"
         android:layout_width="wrap_content"

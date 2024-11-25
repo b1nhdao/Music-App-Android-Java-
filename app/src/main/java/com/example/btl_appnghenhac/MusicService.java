@@ -20,6 +20,13 @@ import com.example.btl_appnghenhac.Object.Song;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.os.Build;
+import androidx.core.app.NotificationCompat;
 
 public class MusicService extends Service {
 
@@ -29,6 +36,7 @@ public class MusicService extends Service {
     private int currentSongIndex;
     public static final String ACTION_PLAY_PAUSE = "com.example.btl_appnghenhac.ACTION_PLAY_PAUSE";
     public static final String ACTION_NEXT = "com.example.btl_appnghenhac.ACTION_NEXT";
+    private static final String CHANNEL_ID = "MusicPlayerChannel";
 
     public class LocalBinder extends Binder {
         MusicService getService() {
@@ -132,22 +140,45 @@ public class MusicService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null && intent.getAction() != null) {
-            switch (intent.getAction()) {
-                case ACTION_PLAY_PAUSE:
-                    playPauseMusic();
-                    break;
-                case ACTION_NEXT:
-                    Log.d("MusicService", "Next song action received");
-                    playNextSong();
-                    break;
-            }
+        if (intent != null && "START_FOREGROUND".equals(intent.getAction())) {
+            createNotificationChannel();
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle("Music Player")
+                    .setContentText("Playing music...")
+                    .setSmallIcon(R.drawable.baseline_music_note_24)
+                    .setContentIntent(pendingIntent)
+                    .build();
+
+            startForeground(1, notification);
         }
         return START_STICKY;
     }
 
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Music Player Service Channel",
+                    NotificationManager.IMPORTANCE_LOW
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null) {
+                manager.createNotificationChannel(serviceChannel);
+            }
+        }
+    }
+
+
+
     public void setSongList(ArrayList<Song> songList) {
         this.songList = songList;
+    }
+
+    public ArrayList<Song> getSongList() {
+        return songList;
     }
 
     @Override

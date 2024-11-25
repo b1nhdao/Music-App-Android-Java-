@@ -1,9 +1,11 @@
 package com.example.btl_appnghenhac;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -34,15 +36,31 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    RecyclerView recyclerview;
-    RelativeLayout widget_song;
-    ImageView img_songImage, img_play;
+    ImageView img_songImage, img_play, img_next;
     TextView tv_songName, tv_songArtist;
     FirebaseFirestore db;
     MusicService musicService;
     Song currentSong;
     boolean serviceBound = false;
     int songID;
+
+    private BroadcastReceiver miniPlayerUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("com.example.btl_appnghenhac.UPDATE_MINI_PLAYER")) {
+                String songName = intent.getStringExtra("songName");
+                String songArtist = intent.getStringExtra("songArtist");
+                String songImageUrl = intent.getStringExtra("songImageUrl");
+
+                // Update mini player UI
+                tv_songName.setText(songName);
+                tv_songArtist.setText(songArtist);
+                Glide.with(MainActivity.this).load(songImageUrl).into(img_songImage);
+                updatePlayButton(); // Update the play button to reflect the current playing state
+            }
+        }
+    };
+
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -71,9 +89,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         img_songImage = findViewById(R.id.img_songImage);
         img_play = findViewById(R.id.img_play);
+        img_next = findViewById(R.id.img_next);
         tv_songName = findViewById(R.id.tv_songName);
         tv_songArtist = findViewById(R.id.tv_songArtist);
-        widget_song = findViewById(R.id.widget_song);
 
         db = FirebaseFirestore.getInstance();
 
@@ -102,7 +120,9 @@ public class MainActivity extends AppCompatActivity {
         startService(intent);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
-        loadSongDetailsFromPreferences();
+        IntentFilter filter = new IntentFilter("com.example.btl_appnghenhac.UPDATE_MINI_PLAYER");
+        registerReceiver(miniPlayerUpdateReceiver, filter);
+
     }
 
     private void loadFragment(Fragment fragment) {
@@ -123,22 +143,45 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        img_next.setOnClickListener(view -> {
+            if (musicService != null) {
+                musicService.playNextSong();
+                updateMiniPlayer();
+            }
+        });
     }
 
-
-    private void loadSongDetailsFromPreferences() {
-        SharedPreferences sharedPreferences = getSharedPreferences("MusicPreferences", MODE_PRIVATE);
-        songID = sharedPreferences.getInt("songID", 0);
-        String songName = sharedPreferences.getString("songName", "");
-        String songArtist = sharedPreferences.getString("songArtist", "");
-        String songImageUrl = sharedPreferences.getString("songImageUrl", "");
-
-        if (!songName.isEmpty() && !songArtist.isEmpty() && !songImageUrl.isEmpty()) {
-            tv_songName.setText(songName);
-            tv_songArtist.setText(songArtist);
-            Glide.with(this).load(songImageUrl).into(img_songImage);
+    private void updateMiniPlayer() {
+        if (musicService != null && musicService.getCurrentSong() != null) {
+            Song currentSong = musicService.getCurrentSong();
+            tv_songName.setText(currentSong.getSongName());
+            tv_songArtist.setText(currentSong.getSongArtistName());
+            Glide.with(this).load(currentSong.getSongImageUrl()).into(img_songImage);
+            updatePlayButton();
         }
     }
+
+    private void updatePlayButton() {
+        if ( musicService.isPlaying()) {
+            img_play.setImageResource(R.drawable.play1);
+        } else {
+            img_play.setImageResource(R.drawable.play2);
+        }
+    }
+
+//    private void loadSongDetailsFromPreferences() {
+//        SharedPreferences sharedPreferences = getSharedPreferences("MusicPreferences", MODE_PRIVATE);
+//        songID = sharedPreferences.getInt("songID", 0);
+//        String songName = sharedPreferences.getString("songName", "");
+//        String songArtist = sharedPreferences.getString("songArtist", "");
+//        String songImageUrl = sharedPreferences.getString("songImageUrl", "");
+//
+//        if (!songName.isEmpty() && !songArtist.isEmpty() && !songImageUrl.isEmpty()) {
+//            tv_songName.setText(songName);
+//            tv_songArtist.setText(songArtist);
+//            Glide.with(this).load(songImageUrl).into(img_songImage);
+//        }
+//    }
 
     @Override
     protected void onDestroy() {
@@ -147,5 +190,6 @@ public class MainActivity extends AppCompatActivity {
             unbindService(serviceConnection);
             serviceBound = false;
         }
+        unregisterReceiver(miniPlayerUpdateReceiver);
     }
 }

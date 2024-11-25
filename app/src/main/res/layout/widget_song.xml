@@ -25,7 +25,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="97dp"
         android:layout_marginTop="5dp"
-        android:text="TextView" />
+        android:text="No Song playing" />
 
     <TextView
         android:id="@+id/tv_songArtist"
@@ -35,7 +35,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="97dp"
         android:layout_marginTop="27dp"
-        android:text="TextView" />
+        android:text="" />
 
     <ImageView
         android:id="@+id/img_play"
@@ -46,5 +46,15 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="74dp"
         app:srcCompat="@drawable/play1" />
+
+    <ImageView
+        android:id="@+id/img_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="23dp"
+        app:srcCompat="@drawable/next" />
 
 </RelativeLayout>

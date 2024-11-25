@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -78,6 +79,8 @@ public class SongPlayingActivity extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     PlaylistSongAdapter playlistAdapter;
     RecyclerView recyclerViewPlaylist;
+
+    TextView tv_sleepTime;
 
     ArrayList<PlaylistCreated> playlistCreatedArrayList = new ArrayList<>();
 
@@ -180,12 +183,18 @@ public class SongPlayingActivity extends AppCompatActivity {
             }
         });
 
+        tv_sleepTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             songArrayList = (ArrayList<Song>) bundle.getSerializable("songList");
             currentSongIndex = bundle.getInt("currentSongIndex", 0);
             code = bundle.getInt("code", 0);
-            saveCurrentSongToPreferences(songArrayList.get(currentSongIndex));
         }
 
         Intent intent = new Intent(this, MusicService.class);
@@ -244,6 +253,8 @@ public class SongPlayingActivity extends AppCompatActivity {
         filter.addAction(MusicService.ACTION_PLAY_PAUSE);
         filter.addAction(MusicService.ACTION_NEXT);
         registerReceiver(appKilledReceiver, filter);
+        startMusicService();
+
     }
 
     private void playCurrentSong() {
@@ -269,9 +280,31 @@ public class SongPlayingActivity extends AppCompatActivity {
             tv_timeEnd.setText(convertDurationToString(musicService.getDuration() / 1000));
             seekBar.setMax(musicService.getDuration());
             updateSeekBar();
+
+            // Send broadcast to update mini player in MainActivity
+            Intent intent = new Intent("com.example.btl_appnghenhac.UPDATE_MINI_PLAYER");
+            intent.putExtra("songName", currentSong.getSongName());
+            intent.putExtra("songArtist", currentSong.getSongArtistName());
+            intent.putExtra("songImageUrl", currentSong.getSongImageUrl());
+            sendBroadcast(intent);
         }
     }
 
+    private void startMusicService() {
+        Intent serviceIntent = new Intent(this, MusicService.class);
+        serviceIntent.setAction("START_FOREGROUND");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
+        }
+        bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private void stopMusicService() {
+        Intent serviceIntent = new Intent(this, MusicService.class);
+        stopService(serviceIntent);
+    }
 
     private void playNextSong() {
         currentSongIndex = (currentSongIndex + 1) % songArrayList.size();
@@ -371,7 +404,7 @@ public class SongPlayingActivity extends AppCompatActivity {
             unbindService(serviceConnection);
             serviceBound = false;
         }
-        unregisterReceiver(appKilledReceiver);
+        // Do NOT call stopService here to ensure the music continues playing.
     }
 
     public String convertDurationToString(int duration) {
@@ -395,17 +428,10 @@ public class SongPlayingActivity extends AppCompatActivity {
         img_loop = findViewById(R.id.img_loop);
         seekBar = findViewById(R.id.seekBar);
         img_songImage1 = findViewById(R.id.img_songImage1);
+        tv_sleepTime = findViewById(R.id.tv_sleepTime);
+        tv_sleepTime.setVisibility(View.VISIBLE);
     }
 
-    private void saveCurrentSongToPreferences(Song song) {
-        SharedPreferences sharedPreferences = getSharedPreferences("MusicPreferences", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("songID", song.getSongID());
-        editor.putString("songName", song.getSongName());
-        editor.putString("songArtist", song.getSongArtistName());
-        editor.putString("songImageUrl", song.getSongImageUrl());
-        editor.apply();
-    }
     private void downloadSong(String songUrl, String coverUrl, String artist, String songTitle) {
         new DownloadTask(songUrl, coverUrl, artist, songTitle).execute();
     }

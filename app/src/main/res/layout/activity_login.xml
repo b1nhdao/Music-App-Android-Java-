@@ -106,4 +106,5 @@
         android:text="Create account"
         android:textSize="16sp"
         android:textStyle="bold" />
+
 </RelativeLayout>
