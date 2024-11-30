@@ -32,6 +32,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.File;
@@ -178,10 +179,24 @@ public class LibraryFragment extends Fragment {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Calculate new document ID and playlistIDc
-                        int totalDocuments = task.getResult().size();
-                        int newDocumentID = totalDocuments + 1;
-                        int newPlaylistIDc = totalDocuments + 1;
+                        // Find the maximum document ID in the collection
+                        int maxDocumentID = 0;
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            try {
+                                int documentID = Integer.parseInt(document.getId());
+                                if (documentID > maxDocumentID) {
+                                    maxDocumentID = documentID;
+                                }
+                            } catch (NumberFormatException e) {
+                                Log.w(TAG, "Non-numeric document ID: " + document.getId());
+                            }
+                        }
+
+                        // Increment to generate a new unique document ID
+                        int newDocumentID = maxDocumentID + 1;
+
+                        // Use the same value for playlistIDc or customize as needed
+                        int newPlaylistIDc = newDocumentID;
 
                         // Create new playlist object
                         PlaylistCreated newPlaylist = new PlaylistCreated(newPlaylistIDc, playlistName, imagePath, songArray);
@@ -202,6 +217,7 @@ public class LibraryFragment extends Fragment {
                     }
                 });
     }
+
 
     private void showSongOfflineList() {
         ArrayList<String> audioFiles = getAudioFiles();

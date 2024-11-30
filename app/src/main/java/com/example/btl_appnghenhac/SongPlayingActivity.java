@@ -446,6 +446,8 @@ public class SongPlayingActivity extends AppCompatActivity {
     };
 
     // BroadcastReceiver to stop the service when the app is killed
+    // However, this was before, but i didnt change the name, so yeh, thats why it doesnt have a proper name
+    // This is also for the notification interaction
     private final BroadcastReceiver appKilledReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -477,7 +479,6 @@ public class SongPlayingActivity extends AppCompatActivity {
             unbindService(serviceConnection);
             serviceBound = false;
         }
-        // Do NOT call stopService here to ensure the music continues playing.
     }
 
     public String convertDurationToString(int duration) {

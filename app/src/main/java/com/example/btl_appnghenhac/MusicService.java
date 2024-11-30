@@ -97,7 +97,6 @@ public class MusicService extends Service {
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        // Set up play/pause and next intents as before...
         Intent playPauseIntent = new Intent(this, MusicService.class);
         playPauseIntent.setAction(ACTION_PLAY_PAUSE);
         PendingIntent playPausePendingIntent = PendingIntent.getService(
@@ -169,6 +168,7 @@ public class MusicService extends Service {
             }
         }
     }
+
 
     public void playNextSong() {
         if (songList != null && currentSongIndex < songList.size() - 1) {
